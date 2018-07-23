@@ -1,0 +1,114 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+function add()
+{
+    window.location.replace("/tb");
+}
+function manage()
+{
+    window.location.replace("/tbManage");
+}
+function search()
+{
+	var i = document.getElementById("startDate").value;
+	var j = document.getElementById("endDate").value;
+	window.location.replace("/tbView?startDate=" + i + "&endDate=" + j);
+}
+$(".primary-nav-list").children("li").children("h2").removeClass("primary-active")
+$("#pnav-blotter").addClass("primary-active")
+$("#secondary-navigation").hide()
+$("#last_update").hide()
+$("#navigation-container").css("margin-bottom","0px")
+</script>
+<style>
+    h4 {
+            font-weight: bold;
+        }
+	table{
+            border-collapse: collapse;
+            border: 4px solid #005CB3;
+        }
+
+    tr td{
+        padding: 0 10px;
+        height: 30px;
+    }
+    tr:hover {
+    	background-color:#f5f5f5;
+        cursor:pointer;
+    }
+</style>
+<form action="" method="post" name="tradeBlotter">
+	<p>
+		{% if startDate!='' %}
+		<input type="date" name="startDate" id="startDate" value="{{startDate}}" />
+		{% else %}
+		<input type="date" name="startDate" id="startDate">
+			<SCRIPT LANGUAGE="JavaScript"> 
+				var now = new Date(); 
+				var month = now.getMonth() + 1;
+				if(month < 10) month = "0" + month;
+				startDate.value = (now.getYear() + 1900) + "-" + month + "-01"; 
+			</SCRIPT> 
+		</input>
+		{% endif %}
+		-
+		{% if endDate!='' %}
+		<input type="date" name="endDate" id="endDate" value="{{endDate}}" />
+		{% else %}
+		<input type="date" name="endDate" id="endDate">
+			<SCRIPT LANGUAGE="JavaScript"> 
+				var now = new Date(); 
+				var month = now.getMonth() + 1;
+				var day = now.getDate();
+				if(month < 10) month = "0" + month;
+				if(day < 10) day = "0" + day;
+				endDate.value = (now.getYear() + 1900) + "-" + month + "-" + day; 
+			</SCRIPT>
+		</input>
+		{% endif %}
+		<input type="button" name="SEARCH" value="SEARCH" style="background-color:#008a00;color:white;font-weight:700;border:none;" onclick="search()" />
+		<input type="button" name="ADD" value="+" onclick="add()" style="background-color:#008a00;color:white;font-weight:700;border:none;float:right;width:30px;"/>
+	</p>
+	<table>
+	<thead>
+	  <tr>
+	    <th style="text-align:center;">Trade Date</th>
+	    <th style="text-align:center;">Time</th>
+	    <th style="text-align:center;">Security Name</th>
+	    <th style="text-align:center;">Side</th>
+	    <th style="text-align:center;">Quantity</th>
+	    <th style="text-align:center;">Price</th>
+	    <th style="text-align:center;">Currency</th>
+	    <th style="text-align:center;">Accounts</th>
+	    <th style="text-align:center;">CounterParty</th>
+	    <th style="text-align:center;">Sales</th>
+	    <th style="text-align:center;">Trader</th>
+	    <th style="text-align:center;">Book</th>
+	    <th style="text-align:center;">ISIN</th>
+	    <th style="text-align:center;">Remark</th>
+	  </tr>
+	 </thead>
+	  {% for i in name %}
+	  	<tr>
+		  	<td style="text-align:center;">{{i.tradeDate}}</td>
+		    <td style="text-align:center;">{{i.time}}</td>
+		    <td style="text-align:left;">{{i.securityName}}</td>
+		    <td style="text-align:center;">{{i.bs}}</td>
+		    <td style="text-align:right;">{{i.quantity}}</td>
+		    <td style="text-align:right;">{{i.price}}</td>
+		    <td style="text-align:center;">{{i.currency}}</td>
+		    <td style="text-align:left;">{{i.accounts}}</td>
+		    <td style="text-align:left;">{{i.counterparty}}</td>
+		    <td style="text-align:center;">{{i.salesTrader}}</td>
+		    <td style="text-align:center;">{{i.trader}}</td>
+		    <td style="text-align:center;">{{i.book}}</td>
+		    <td style="text-align:center;">{{i.ISIN}}</td>
+		    <td style="text-align:center;">{{i.remark}}</td>
+	  	</tr>
+	  {% endfor %}
+	</table>
+</form>
+{% endblock %}

@@ -1,0 +1,172 @@
+2017-06-22 11:07:38,457 - run - ERROR - Login Error!
+Traceback (most recent call last):
+  File ".\run.py", line 100, in login
+    return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+  File "c:\python27\lib\site-packages\flask_openid.py", line 561, in try_login
+    auth_request = consumer.begin(identity_url)
+  File "c:\python27\lib\site-packages\openid\consumer\consumer.py", line 353, in begin
+    return self.beginWithoutDiscovery(service, anonymous)
+  File "c:\python27\lib\site-packages\openid\consumer\consumer.py", line 376, in beginWithoutDiscovery
+    auth_req = self.consumer.begin(service)
+  File "c:\python27\lib\site-packages\openid\consumer\consumer.py", line 598, in begin
+    assoc = self._getAssociation(service_endpoint)
+  File "c:\python27\lib\site-packages\openid\consumer\consumer.py", line 1158, in _getAssociation
+    assoc = self.store.getAssociation(endpoint.server_url)
+  File "c:\python27\lib\site-packages\openid\store\filestore.py", line 275, in getAssociation
+    association = self._getAssociation(full_name)
+  File "c:\python27\lib\site-packages\openid\store\filestore.py", line 312, in _getAssociation
+    _removeIfPresent(filename)
+  File "c:\python27\lib\site-packages\openid\store\filestore.py", line 84, in _removeIfPresent
+    os.unlink(filename)
+WindowsError: [Error 5] Access is denied: 'C:\\Users\\Administrator\\workspace\\CCMOPS\\src\\tmp\\associations\\https-open.login.yahooapis.com-7zqRNWhy5.EKPdEJ9.anF4sU5jI-SLkn4r1I4.rZoNWY_u063Sj9LHU'
+2017-06-22 13:29:23,161 - __main__ - ERROR - File does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 59, in main
+    g.service.fxList()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxList
+    self.fxList = self.fxToBackTradeList()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 468, in fxToBackTradeList
+    with open(file, 'rU') as csvfile:
+IOError: [Errno 2] No such file or directory: 'C:\\FXtrade\\FX_trade_20170622.csv'
+2017-06-22 13:29:37,319 - __main__ - ERROR - File does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 59, in main
+    g.service.fxList()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxList
+    self.fxList = self.fxToBackTradeList()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 468, in fxToBackTradeList
+    with open(file, 'rU') as csvfile:
+IOError: [Errno 2] No such file or directory: 'C:\\FXtrade\\FX_trade_20170622.csv'
+2017-06-28 08:56:00,561 - run - ERROR - File does not exist!
+Traceback (most recent call last):
+  File ".\run.py", line 57, in main
+    g.service.fxRate()
+  File ".\service\serviceImpl.py", line 31, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\FxRate\\CCMFxRate_20170628.csv'
+2017-06-28 09:19:44,315 - run - ERROR - File does not exist!
+Traceback (most recent call last):
+  File ".\run.py", line 57, in main
+    g.service.fxRate()
+  File ".\service\serviceImpl.py", line 31, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\FxRate\\CCMFxRate_20170628.csv'
+2017-06-28 09:25:42,486 - run - ERROR - File does not exist!
+Traceback (most recent call last):
+  File ".\run.py", line 57, in main
+    g.service.fxRate()
+  File ".\service\serviceImpl.py", line 31, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\FxRate\\CCMFxRate_20170628.csv'
+2017-06-28 09:34:53,003 - run - ERROR - File does not exist!
+Traceback (most recent call last):
+  File ".\run.py", line 57, in main
+    g.service.fxRate()
+  File ".\service\serviceImpl.py", line 31, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\FxRate\\CCMFxRate_20170628.csv'
+2017-06-29 08:48:47,493 - run - ERROR - File does not exist!
+Traceback (most recent call last):
+  File ".\run.py", line 50, in main
+    g.service.fxRate()
+  File ".\service\serviceImpl.py", line 31, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\FxRate\\CCMFxRate_20170629.csv'
+2017-08-14 09:42:37,078 - run - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File ".\run.py", line 49, in main
+    g.service.fxRate()
+  File ".\service\serviceImpl.py", line 24, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate_20170814.csv'
+2018-03-07 09:50:09,480 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:50:09,509 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:50:30,253 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:50:30,299 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:50:49,385 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:51:49,407 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:51:49,426 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:52:15,415 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:52:34,970 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:52:48,845 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:53:03,700 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-03-07 09:53:11,529 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'
+2018-04-09 16:53:18,187 - __main__ - ERROR - FX rate file does not exist!
+Traceback (most recent call last):
+  File "C:\Users\Administrator\workspace\CCMOPS\src\run.py", line 57, in main
+    g.service.fxRate()
+  File "C:\Users\Administrator\workspace\CCMOPS\src\service\serviceImpl.py", line 25, in fxRate
+    with open(file, 'r') as fxrate:
+IOError: [Errno 2] No such file or directory: 'C:\\TIMS_InputFile\\FxRate\\CCMFxRate.csv'

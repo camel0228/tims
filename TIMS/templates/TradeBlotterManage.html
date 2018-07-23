@@ -1,0 +1,62 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+function confirm(id)
+{
+	window.location.replace("/tbConfirm?id=" + id)
+}
+</script>
+<form action="" method="post" name="tradeBlotter">
+	<table>
+	  <tr>
+	    <th>Trade Date</th>
+	    <th>Time</th>
+	    <th>B/S</th>
+	    <th>Quantity</th>
+	    <th>Security Name</th>
+	    <th>Price</th>
+	    <th>Currency</th>
+	    <th>Trader</th>
+	    <th>Accounts</th>
+	    <th>CounterParty</th>
+	    <th>Sales/Trader</th>
+	    <th>Status</th>
+	    <th>Remark</th>
+	  </tr>
+	  {% for i in name %}
+	  	<tr>
+		  	<td>{{i.tradeDate}}</td>
+		    <td>{{i.time}}</td>
+		    <td>{{i.bs}}</td>
+		    <td>{{i.quantity}}</td>
+		    <td>{{i.securityName}}</td>
+		    <td>{{i.price}}</td>
+		    <td>{{i.currency}}</td>
+		    <td>{{i.trader}}</td>
+		    <td>{{i.accounts}}</td>
+		    <td>{{i.counterparty}}</td>
+		    <td>{{i.salesTrader}}</td>
+		    <td>{{i.status}}</td>
+		    <td>{{i.remark}}</td>
+		    <td><input type="button" name="CONFIRM" value="CONFIRM" onclick="confirm({{i.id}})"></td>
+	  	</tr>
+	  {% endfor %}
+	</table>
+	<div class="pagination">
+	  	<span class="step-links">
+	  		{% if name.has_previous() %}
+	  			<input type="hidden" name="pageNo" value={{ name.previous_page_number() }}/>
+	  			<a href="?pageNo={{ name.previous_page_number() }}">previous</a>
+	  		{% endif %}
+	  		<span class="current">
+	  			Page {{ name.number }} of {{ name.paginator.num_pages }}
+	  		</span>
+	  		{% if name.has_next() %}
+	  			<input type="hidden" name="pageNo" value={{ name.next_page_number() }}/>
+	  			<a href="?pageNo={{ name.next_page_number() }}">next</a>
+	  		{% endif %}
+	  	</span>
+	</div>
+</form>
+{% endblock %}

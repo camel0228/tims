@@ -1,0 +1,76 @@
+<!DOCTYPE html >
+<html >
+	<head>
+		<meta charset="utf-8" />
+		<title>SHEET</title>
+		<script>
+			function addRow(){
+			var oTable = document.getElementById("oTable");
+			var tBodies = oTable.tBodies;
+			var tbody = tBodies[0];
+			var tr = tbody.insertRow(tbody.rows.length);
+			var td_1 = tr.insertCell(0);
+			td_1.innerHTML = "<div contenteditable='true'></div>";
+			var td_2 = tr.insertCell(1);
+			td_2.innerHTML = "<div contenteditable='true'></div>";
+			var td_3 = tr.insertCell(2);
+			td_3.innerHTML = "<div contenteditable='true'></div>";
+			var td_4 = tr.insertCell(3);
+			td_4.innerHTML = "<div contenteditable='true'></div>";
+			var td_5 = tr.insertCell(4);
+			td_5.innerHTML = "<div contenteditable='true'></div>";
+			var td_6 = tr.insertCell(5);
+			td_6.innerHTML = "<div contenteditable='true'></div>";
+			var td_7 = tr.insertCell(6);
+			td_7.innerHTML = "<div contenteditable='true'></div>";
+			var td_8 = tr.insertCell(7);
+			td_8.innerHTML = "<div contenteditable='true'></div>";
+			var td_9 = tr.insertCell(8);
+			td_9.innerHTML = "<div contenteditable='true'></div>";
+			var td_10 = tr.insertCell(9);
+			td_10.innerHTML = "<div contenteditable='true'></div>";
+			var td_11 = tr.insertCell(10);
+			td_11.innerHTML = "<div contenteditable='true'></div>";}
+		</script>
+	</head>
+	<body>
+		<fieldset name="form" method="post" action="#">
+			<legend>TABLE</legend>
+			<table id="oTable" style="background-color:#eeeeee;" bordercolor="#aaaaaa" border="1" cellpadding="0" cellpadding="2" width="100%">
+			<thead>
+				<tr>
+					<th>Trade Date</th>
+					<th>Time</th>
+					<th>B/S</th>
+					<th>Quantity</th>
+					<th>Security Name</th>
+					<th>Price</th>
+					<th>Currency</th>
+					<th>Trader</th>
+					<th>Accounts</th>
+					<th>CounterParty</th>
+					<th>Sales/Trader</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+					<td><div contenteditable="true"></div></td>
+				</tr>
+			</tbody>
+			</table>
+		</fieldset>
+		<input type="button" onClick="addRow();" style="font-size:16px;" value="+"/>
+		<input type="submit" name="submit" value="submit">
+	</body>
+</html>

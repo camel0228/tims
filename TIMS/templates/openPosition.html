@@ -1,0 +1,149 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+function refresh()
+{
+	var i = document.getElementById("account").value;
+	var j = document.getElementById("group").value;
+    window.location.replace("/op?account=" + i + "&group=" + j);
+}
+</script>
+<form action="" method="post" name="openPosition">
+	&nbsp;Account:&nbsp;
+	<select id="account" name="account" style="width:192px;" onchange="refresh()">
+		{% if account == "AGCF" %}
+			<option value = "AGCF" selected>ANDROMEDA</option>
+		{% else %}
+			<option value = "AGCF">ANDROMEDA</option>
+		{% endif %}
+		{% if account == "ACPT" %}
+			<option value = "ACPT" selected>ASPEN CREEK</option>
+		{% else %}
+			<option value = "ACPT">ASPEN CREEK</option>
+		{% endif %}
+		{% if account == "INC5" %}
+			<option value = "INC5" selected>BALDR DRACO</option>
+		{% else %}
+			<option value = "INC5">BALDR DRACO</option>
+		{% endif %}
+		{% if account == "INC0" %}
+			<option value = "INC0" selected>BALDR DRACO SERIES B</option>
+		{% else %}
+			<option value = "INC0">BALDR DRACO SERIES B</option>
+		{% endif %}
+		{% if account == "HART" %}
+			<option value = "HART" selected>HARTZ</option>
+		{% else %}
+			<option value = "HART">HARTZ</option>
+		{% endif %}
+		{% if account == "PGOF" %}
+			<option value = "PGOF" selected>PERSEUS</option>
+		{% else %}
+			<option value = "PGOF">PERSEUS</option>
+		{% endif %}
+	</select>
+	<br /><br />
+	<table style="width:50%;">
+	  <tr>
+	    <th style="text-align:center;">Account Value</th>
+	    <th style="text-align:center;">Cash & Cash Invest.</th>
+	    <th style="text-align:center;">Market Value</th>
+	    <th style="text-align:center;">Cost Basis</th>
+	    <th style="text-align:center;">Gain/Loss</th>
+	  </tr>
+	  <tr>
+	    <td style="text-align:right;">{{summary.accountValue}}</td>
+	    <td style="text-align:right;">{{summary.cash}}</td>
+	    <td style="text-align:right;">{{summary.marketValue}}</td>
+	    <td style="text-align:right;">{{summary.costBasis}}</td>
+	    <td style="text-align:right;">{{summary.gainLoss}}</td>
+	  </tr>
+	</table>
+	<br />
+	<table style="width: 50%;">
+	  <tr>
+	    <th style="text-align:center;">Top Categories</th>
+	    <th style="text-align:center;">Market Value</th>
+	    <th style="text-align:center;">UnRz G/L</th>
+	    <th style="text-align:center;">Weight(%)</th>
+	  </tr>
+	  <tr>
+	    <td style="text-align:center;">Argentina</td>
+	    <td style="text-align:right;">{{summary.marketForAR}}</td>
+	    <td style="text-align:right;">{{summary.glForAR}}</td>
+	    <td style="text-align:right;">{{summary.weightForAR}}</td>
+	  </tr>
+	  <tr>
+	    <td style="text-align:center;">Greece</td>
+	    <td style="text-align:right;">{{summary.marketForGT}}</td>
+	    <td style="text-align:right;">{{summary.glForGT}}</td>
+	    <td style="text-align:right;">{{summary.weightForGT}}</td>
+	  </tr>
+	  <tr>
+	    <td style="text-align:center;">Venezuela</td>
+	    <td style="text-align:right;">{{summary.marketForVE}}</td>
+	    <td style="text-align:right;">{{summary.glForVE}}</td>
+	    <td style="text-align:right;">{{summary.weightForVE}}</td>
+	  </tr>
+	</table>
+	<br /><br />
+	&nbsp;Group By:&nbsp;
+	<select id="group" name="group" style="width:192px;" onchange="refresh()">
+		{% if group == "issuer" %}
+			<option value = "issuer" selected>Issuer</option>
+		{% else %}
+			<option value = "issuer">Issuer</option>
+		{% endif %}
+		{% if group == "securityType" %}
+			<option value = "securityType" selected>Type</option>
+		{% else %}
+			<option value = "securityType">Type</option>
+		{% endif %}
+		{% if group == "riskCategory" %}
+			<option value = "riskCategory" selected>Category</option>
+		{% else %}
+			<option value = "riskCategory">Category</option>
+		{% endif %}
+	</select>
+	<br /><br />
+	<table>
+	  <tr>
+	    <th style="text-align:center;">Issuer</th>
+	    <th style="text-align:center;">Type</th>
+	    <th style="text-align:center;">Category</th>
+	    <th style="text-align:center;">Coupon</th>
+	    <th style="text-align:center;">Maturity</th>
+	    <th style="text-align:center;">Quantity</th>
+	    <th style="text-align:center;">Price</th>
+	    <th style="text-align:center;">Mkt Value</th>
+	    <th style="text-align:center;">Weight(%)</th>
+	    <th style="text-align:center;">DTD Px(%)</th>
+	    <th style="text-align:center;">MTD Px(%)</th>
+	    <th style="text-align:center;">UnRz G/L</th>
+	    <th style="text-align:center;">Cost Basis</th>
+	    <th style="text-align:center;">Crn</th>
+	    <th style="text-align:center;">ISIN</th>
+	  </tr>
+	  {% for i in name %}
+	  <tr>
+		 <td style="text-align:center;">{{i.issuer}}</td>
+		 <td style="text-align:center;">{{i.securityType}}</td>
+		 <td style="text-align:center;">{{i.riskCategory}}</td>
+		 <td style="text-align:right;">{{i.coupon}}</td>
+		 <td style="text-align:center;">{{i.maturityDate}}</td>
+	     <td style="text-align:right;">{{i.quantity}}</td>
+	     <td style="text-align:right;">{{i.currentPrice}}</td>
+	     <td style="text-align:right;">{{i.value}}</td>
+	     <td style="text-align:right;">{{i.weight}}</td>
+	     <td style="text-align:right;">{{i.dtdPriceChange}}</td>
+	     <td style="text-align:right;">{{i.mtdPriceChange}}</td>
+	     <td style="text-align:right;">{{i.unrealizedGL}}</td>
+	     <td style="text-align:right;">{{i.basisValue}}</td>
+	     <td style="text-align:center;">{{i.currency}}</td>
+	     <td style="text-align:center;">{{i.ISIN}}</td>
+	  </tr>
+	  {% endfor %}
+	</table>
+</form>
+{% endblock %}

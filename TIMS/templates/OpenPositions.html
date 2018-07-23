@@ -1,0 +1,42 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<form action="" method="post" name="openPositions">
+	<table>
+	  <tr>
+	    <th><a href="">Fund</a></th>
+	    <th><a href="">Asset Type</a></th>
+	    <th><a href="">Security</a></th>
+	    <th>Coupon</th>
+	    <th>Maturity</th>
+	    <th>Currency</th>
+	    <th>Nominal</th>
+	    <th>Price</th>
+	    <th>Principal</th>
+	    <th>Factor</th>
+	    <th>Market Value</th>
+	    <th>% Market Value</th>
+	    <th>Unrealized G/L</th>
+	    <th>ISIN</th>
+	  </tr>
+	  {% for i in name %}
+	  	<tr>
+		  	<td>{{i.fundName}}</td>
+		  	<td>{{i.securityType}}</td>
+		    <td>{{i.securityName}}</td>
+		    <td>{{i.coupon}}</td>
+		    <td>{{i.maturity}}</td>
+		    <td>{{i.currency}}</td>
+		    <td>{{i.quantity}}</td>
+		    <td>{{i.price}}</td>
+		    <td>{{i.principal}}</td>
+		    <td>{{i.factor}}</td>
+		    <td></td>
+		    <td></td>
+		    <td></td>
+		    <td>{{i.ISIN}}</td>
+	  	</tr>
+	  {% endfor %}
+	</table>
+</form>
+{% endblock %}

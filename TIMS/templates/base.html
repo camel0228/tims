@@ -1,0 +1,306 @@
+<html>
+  <head>
+  	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+		function fuzzyQuery()
+		{
+			var i = document.getElementById("QueryString-uti-nav").value;
+		    window.location.replace("/transSearch?criteria=" + i);
+		}
+	</script>
+  	<style>
+  		body {
+            font: 13px Helvetica;
+        }
+		table {
+    		font-family: arial, sans-serif;
+    		border-collapse: collapse;
+    		width: 100%;
+    		border: 4px solid #005CB3;
+    		font-size:15px;
+		}
+		thead tr{
+			border-bottom: 2px solid #005CB3;
+		}
+		thead tr th{
+			font-weight:700;
+			
+		}
+
+		td, th {
+    		border: 1px solid #dddddd;
+    		text-align: left;
+    		padding: 8px;
+    		white-space: nowrap;
+			}
+		select{
+			width:280px;
+			background-color:#037dae;
+			color:white;
+			font-weight:700;
+			height:30px;
+			padding:4px 10px;
+		}
+		select option{
+			background-color:white;
+			color:black;
+			height:30px;
+		}
+			
+		#navigation-container{
+            font-family: Arial,Helvetica,sans-serif;
+            display: block;
+            height: 60px;
+            margin-bottom: 50px;
+            background: linear-gradient(#435562,#344551);
+            -webkit-font-smoothing: antialiased;
+         }
+         #logo-container{
+            float: left;
+            margin-left: 12px;
+            display: inline-block;
+            margin: 0 15px 0 24px;
+            height: 60px;
+         }
+         #navigation nav .primary-chanel {
+            display: inline-block;
+            height: 60px;
+            box-sizing: border-box;
+         }
+        
+         .primary-nav-list{
+             margin: 0 0;
+             position:relative;
+         }
+         .primary-nav-dropdown{
+             display:inline-block;
+             margin: 0 15px;
+         }
+         .primary-nav-dropdown h2{
+            line-height: 9px;
+            display: inline-block;
+            margin: 1px 11px;
+            padding: 20px 5px;
+            font-size: 17px;
+            display: inline-block;
+            margin: -1px 0 0;
+            font-weight: 500;
+            line-height: 1.1;
+            color:#eee
+         }
+         .primary-nav-dropdown h2 a{
+            text-decoration:none;
+            color:inherit;
+         }
+         .primary-nav-dropdown h2:hover{
+            color:#fff;
+            cursor:pointer;
+ 
+         }
+         .primary-nav-dropdown h2.primary-active{
+            font-weight: 700;
+            color:#fff;
+            border-bottom: 3px solid #1aa1dd;
+         }
+         #calender-container{
+             background-color:yellowgreen;
+             display:none;
+ 
+         }
+         #secondary-navigation{
+            padding: 6px 0 4px 0px;
+            display: block;
+         }
+         .secondary-nav-list{
+             margin: 0 0;
+             position:relative;
+         }
+         .secondary-nav-dropdown{
+             display:inline-block;
+             margin: 0 15px;
+         }
+         .secondary-nav-dropdown h3{
+            line-height: 9px;
+            display: inline-block;
+            padding: 12px 5px;
+            display: inline-block;
+            margin: -1px 0 0;
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.1;
+            margin-right: 19px;
+            color: #222;
+         }
+         .secondary-nav-dropdown h3 a{
+            text-decoration:none;
+            color:inherit;
+         }
+         .secondary-nav-dropdown h3:hover {
+             cursor:pointer;
+             text-decoration:underline;
+         }
+         .secondary-nav-dropdown h3.secondary-active {
+             font-weight:600;
+             color:#000;
+         }
+         input{
+    		margin:0 5px;
+    		height:30px;
+    		padding: 0 5px;
+    		vertical-align:middle;
+    	}
+    	#utility-navigation{
+            display: block;
+            margin-right: 30px;
+            position: absolute;
+            right: 0;
+            top:8px;
+            height: 60px;
+            box-sizing: border-box;
+         }
+         #utility-navigation ol{
+             display:inline-block;
+            margin: 0 15px;
+         }
+         #utility-navigation ol li{
+            position: relative;
+            display: inline-block;
+         }
+        
+         .utility-nav-dropdown h2{
+            line-height: 9px;
+            display: inline-block;
+            margin: 1px 11px;
+            padding: 20px 5px;
+            font-size: 17px;
+            display: inline-block;
+            margin: -1px 0 0;
+            font-weight: 500;
+            line-height: 1.1;
+         }
+         .utility-nav-dropdown h2 a{
+         	color:#eee;
+         	text-decoration:none;
+         }
+         .utility-nav-dropdown h2:hover{
+            cursor:pointer;
+            text-decoration:underline;
+         }
+         .utility-nav-dropdown input{
+            background: hsla(0,0%,100%,.3);
+            border: 0;
+            padding: 7px 30px 8px 10px;
+            font-size: 13px;
+         }
+         .utility-nav-dropdown input::placeholder{
+            color: #fff;
+         }
+ 
+         .utility-nav-dropdown button{
+            text-indent: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            background-image: url('../static/search.svg');
+            background-position: 50%;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            color: transparent;
+            border: 0;
+            position: absolute;
+            top: 0;
+ 
+         }
+         #toggleSearch{
+            opacity: .6;
+            background-size: 15px;
+            right: 0;
+            height: 30px;
+            width: 15px;
+            padding: 4px 15px;
+         }
+         .utility-nav-dropdown button:hover{
+            cursor:pointer
+         }
+         #last_update{
+			display: inline-block;
+    		float: right;
+			position: absolute;
+			margin-right: 10px;
+            right: 0;
+            top:85px;
+            font-weight:500;
+            font-style: italic;
+    	 }
+	</style>
+    {% if title %}
+    <title>{{title}} - CCM TIMS</title>
+    {% else %}
+    <title>CCM TIMS</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>
+        <header id="navigation-container">
+            <div id="logo-container">
+                <img src="../static/ccmlogo.jpg" style="height:58px;padding-top:1px"/>
+            </div>
+            <nav id="primary-navigation" class="primary-chanel">
+                <ol class="primary-nav-list">
+                    <li class="primary-nav-dropdown">
+                        <h2 id="pnav-account"><a href="/op">Account</a></h2>
+                    </li>
+                    <li class="primary-nav-dropdown">
+                        <h2 id="pnav-shareholders"><a href="/sh">Investors</a></h2>
+                    </li>
+                    <!-- 
+                    <li class="primary-nav-dropdown">
+                        <h2 id="pnav-blotter"><a href="/tbView">Blotter</a></h2>
+                    </li>
+                    -->
+                </ol>
+            </nav>
+            <nav id="secondary-navigation" class="secondary-chanel">
+                <ol class="secondary-nav-list">
+                    <li class="secondary-nav-dropdown">
+                        <h3 id="snav-positions"><a href="/op">Positions</a></h3>
+                    </li>
+                    <li class="secondary-nav-dropdown">
+                        <h3 id="snav-transactions"><a href="/transView" >Transactions</a></h3>
+                    </li>
+                    <li class="secondary-nav-dropdown">
+                        <h3 id="snav-realizedgl"><a href="/gl" >Gain/Loss</a></h3>
+                    </li>
+                    <li class="secondary-nav-dropdown">
+                        <h3 id="snav-investorstatement"><a href="/sh" >Statement</a></h3>
+                    </li>
+                    <li class="secondary-nav-dropdown">
+                        <h3 id="snav-subredrecord"><a href="/sh2" >Subscription & Redemption</a></h3>
+                    </li>
+                </ol>
+                
+            </nav>
+            <div id="utility-navigation" class="unitility-chanel">
+                <ol>
+                    <li id="untility-search" class="utility-nav-dropdown">
+                        <div class="input-area">
+                            <input id="QueryString-uti-nav" class="QueryString" type="text" placeholder="Search" aria-expanded="True"/>
+                        </div>
+                        <button id="toggleSearch" class="search-icon" type="submit" onclick="fuzzyQuery()"></button>
+                    </li>
+                    <li id="logout" class="utility-nav-dropdown">
+                        <h2>
+                        {% if g.user.is_authenticated() %}
+        					<a href="{{ url_for('logout') }}">Logout</a>
+        				{% endif %}
+        				</h2>
+                    </li>
+                </ol>
+            </div>
+            <div id="last_update">{{lastUptDt}}</div>
+        </header>
+	</div>
+    <hr>
+    {% block content %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,91 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+function refresh()
+{
+	var i = document.getElementById("account").value;
+	var j = document.getElementById("group").value;
+    window.location.replace("/op?account=" + i + "&group=" + j);
+}
+</script>
+<form action="" method="post" name="openPosition">
+	&nbsp;Account:&nbsp;
+	<select id="account" name="account" style="width:192px;" onchange="refresh()">
+		{% if account == "AGCF" %}
+			<option value = "AGCF" selected>ANDROMEDA</option>
+		{% else %}
+			<option value = "AGCF">ANDROMEDA</option>
+		{% endif %}
+		{% if account == "ACPT" %}
+			<option value = "ACPT" selected>ASPEN CREEK</option>
+		{% else %}
+			<option value = "ACPT">ASPEN CREEK</option>
+		{% endif %}
+		{% if account == "INC5" %}
+			<option value = "INC5" selected>BALDR DRACO</option>
+		{% else %}
+			<option value = "INC5">BALDR DRACO</option>
+		{% endif %}
+		{% if account == "INC0" %}
+			<option value = "INC0" selected>BALDR DRACO SERIES B</option>
+		{% else %}
+			<option value = "INC0">BALDR DRACO SERIES B</option>
+		{% endif %}
+		{% if account == "HART" %}
+			<option value = "HART" selected>HARTZ</option>
+		{% else %}
+			<option value = "HART">HARTZ</option>
+		{% endif %}
+		{% if account == "PGOF" %}
+			<option value = "PGOF" selected>PERSEUS</option>
+		{% else %}
+			<option value = "PGOF">PERSEUS</option>
+		{% endif %}
+	</select>
+	<br /><br />
+	<table style="width:50%;">
+	  <tr>
+	    <th>Account Value</th>
+	    <th>Cash & Cash Invest.</th>
+	    <th>Market Value</th>
+	    <th>Cost Basis</th>
+	    <th>Gain/Loss</th>
+	  </tr>
+	  <tr>
+	    <td>{{summary.accountValue}}</td>
+	    <td>{{summary.cash}}</td>
+	    <td>{{summary.marketValue}}</td>
+	    <td>{{summary.costBasis}}</td>
+	    <td>{{summary.gainLoss}}</td>
+	  </tr>
+	</table>
+	<br />
+	<table style="width: 50%;">
+	  <tr>
+	    <th>Top Categories</th>
+	    <th>Market Value</th>
+	    <th>UnRz G/L</th>
+	    <th>Weight(%)</th>
+	  </tr>
+	  <tr>
+	    <td>Argentina</td>
+	    <td>{{summary.marketForAR}}</td>
+	    <td>{{summary.glForAR}}</td>
+	    <td>{{summary.weightForAR}}</td>
+	  </tr>
+	  <tr>
+	    <td>Greece</td>
+	    <td>{{summary.marketForGT}}</td>
+	    <td>{{summary.glForGT}}</td>
+	    <td>{{summary.weightForGT}}</td>
+	  </tr>
+	  <tr>
+	    <td>Venezuela</td>
+	    <td>{{summary.marketForVE}}</td>
+	    <td>{{summary.glForVE}}</td>
+	    <td>{{summary.weightForVE}}</td>
+	  </tr>
+	</table>
+</form>
+{% endblock %}

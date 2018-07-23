@@ -1,0 +1,1096 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+
+<meta charset="utf-8" />
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src='../static/jquery.min.js'></script>
+<script src='../static/moment.min.js'></script>
+<script src="../static/fullcalendar.min.js"></script>
+<link rel="stylesheet" href="../static/fullcalendar.min.css">
+<link rel="stylesheet" href="../static/fullcalendar.print.css">
+
+<style>
+        
+        h4 {
+            font-weight: bold;
+        }
+
+        #full-position-list-header {
+        	text-align:center;
+            border-top: 4px solid #005CB3;
+            height: 30px;
+        }
+        #summary1{
+           border-top: 4px solid #005CB3;
+           border-bottom: 2px solid #005CB3;
+           padding: 0 10px;
+           height: 40px;
+           font-weight: bold;
+        }
+        #full-position-list-header td{
+           border-bottom: 1px solid #BFBFBF;
+           padding: 0 10px;
+           font-weight:700;
+           height: 40px;
+        }              
+        .security-position-list tr td{
+            height: 41px;
+            padding: 0 10px;
+            height: 30px;
+            font: 13px Helvetica;
+        }
+        .security-position-list tr:hover{
+            background-color:#f5f5f5;
+            font: 13px Helvetica;
+        }
+        .groupheader-row {
+            border-top: 2px solid #005CB3;
+            font: 13px Helvetica;
+        }
+        .expandcollapse {
+            display:inline-block;
+            margin-left:5px;
+            margin-right:5px;
+            width:15px;
+            text-align:center;
+            background-color: #0066CC;
+            color: white;
+            text-decoration: none;
+            font: 13px Helvetica;
+         }
+        .groupheader-row tr{
+           padding: 0 15px;
+           height: 40px;
+           font: 13px Helvetica;
+        }
+        .groupheader-row tr td h4{
+            font-size: 16px;
+            font-weight: bold;
+            display: inline;
+            font: 13px Helvetica;
+        }
+        .footer-row {
+            border-bottom: 2px solid #005CB3;
+            font: 13px Helvetica;
+        }
+        .equity footer-row td h4{
+            font-size: 14px;
+            font-weight: bold;
+            display: inline;
+            font: 13px Helvetica;
+        }
+        .cb{
+            cursor:pointer;
+            text-decoration:underline;
+        }
+        .isin{
+            cursor:pointer;
+            text-decoration:underline;
+        }
+        .sort{
+        	cursor:pointer;
+        }
+        #full-position-list-footer {
+            height: 30px;
+            border-top: 2px solid #005CB3;
+            border-bottom: 4px solid #005CB3;
+        }
+        #full-position-list-footer td{
+           padding: 0 10px;
+           font-weight:700;
+           height: 40px;
+        } 
+        .popup {
+        	display:none;
+            position: absolute;
+            z-index:100;
+            background-color:white;
+            width: 450px;
+            border: 1px solid #8a4419;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, .5);
+        }
+        .popup .title {
+            font-size:14px;
+            font-weight:600;
+            padding:10px 10px;
+       }
+        .popup-info {
+            width:90%;
+            display: block;
+            margin: auto;
+            border:none
+        }
+        .popup-info thead tr {
+            font-weight:400;
+            border-bottom:2px dashed #005CB3 
+       }
+        .popup-info tr{
+            text-align:right;
+        }
+        .popup-info tr td{
+            padding: 0 10px;
+            height: 30px;
+        }
+        .popup-info tbody td{
+            color:#3e3e3e;
+        }
+        .popup-footnotes {
+            color:#7e7e7e;
+            font-size:10px;
+            padding:10px 10px;
+        }
+        #graph_container3{
+             max-height:500px;
+             display:none;
+         }
+        #calender-container{
+             background-color:white;
+             max-height:500px;
+             display:none;
+ 
+         }
+         #calendar {
+            max-width: 900px;
+            height:500px;
+            margin: 0 auto;
+            border:none;
+            border-collapse: collapse;
+         }
+         #calendar .fc-right{
+         	display:none;
+         }
+         #calendar .fc-center h2{
+         	font-weight:100;
+         	font-size:18px;
+         }
+         #calendar .fc-today-button{
+         	display:none;
+         }
+         #calendar table{
+         	border:initial;
+         }
+         #calendar table thead tr{
+         	border:initial;
+         }
+         #calendar table tbody tr{
+         	border:initial;
+         }
+         #calendar .fc-title{
+         	white-space : normal;
+         }
+         .cf-incoming, .cf-incoming div,.cf-incoming span {
+             background-color: green; /* background color */
+             border-color: green;     /* border color */
+             color: yellow;
+         }
+         .cf-outgoing, .cf-outgoing div,.cf-outgoing span {
+             background-color: red; /* background color */
+             border-color: red;     /* border color */
+             color: orange;
+         }
+         #ls-term-gainloss-popup {
+            display:none;
+            position: absolute;
+            background-color:white;
+            border: 1px solid #8a4419;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, .5);
+            z-index:100;
+        }
+        #cash-component-popup {
+            display:none;
+            position: absolute;
+            background-color:white;
+            border: 1px solid #8a4419;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, .5);
+            z-index:100;
+        }
+        #ls-term-gainloss-popup .title {           
+            font-size:14px;
+            font-weight:600;
+            padding-top:10px;
+            padding-left:10px;
+        }
+        #cash-component-popup .title {           
+            font-size:14px;
+            font-weight:600;
+            padding-top:10px;
+            padding-left:10px;
+        }
+        #ls-term-gainloss-info {
+            display: block;
+            margin: 15px;
+            border:none
+        }
+        #cash-component-info{
+           	display: block;
+            margin: 15px;
+            border:none
+        }
+        #ls-term-gainloss-info thead tr {
+            font-weight:400;
+            border-bottom:2px dashed #005CB3
+        }
+        #cash-component-info thead tr{
+            font-weight:400;
+            border-bottom:2px dashed #005CB3
+        }
+        #ls-term-gainloss-info tr{
+            text-align:right;
+        }
+        #cash-component-info tr{
+            text-align:right;
+        }
+        #ls-term-gainloss-info tr td{
+            padding: 0 10px;
+            height: 30px;
+        }
+        #cash-component-info tr td{
+            padding: 0 10px;
+            height: 30px;
+        }
+        #ls-term-gainloss-info tbody td{
+            color:#3e3e3e;
+        }
+        #cash-component-info tbody td{
+            color:#3e3e3e;
+        }
+        #lsterm_GL{
+            text-decoration:underline;
+            cursor:pointer
+        }
+        #tradable_cash{
+            text-decoration:underline;
+            cursor:pointer
+        }
+ 
+</style>
+
+<script type="text/javascript">
+	function refresh()
+	{
+		var i = document.getElementById("account").value;
+		var j = document.getElementById("group").value;
+	    window.location.replace("/op?account=" + i + "&group=" + j);
+	}
+	$(".primary-nav-list").children("li").children("h2").removeClass("primary-active")
+	$(".secondary-nav-list").children("li").children("h3").removeClass("secondary-active")
+	$("#pnav-account").addClass("primary-active")
+	$("#snav-positions").addClass("secondary-active")
+	$("#snav-investorstatement").hide()
+	$("#snav-subredrecord").hide()
+	$("#secondary-navigation").show()
+	$("#navigation-container").css("margin-bottom","50px")
+</script>
+
+<form action="" method="post" name="openPosition">
+	<select id="account" name="account" onchange="refresh()">
+		<!--
+		{% if account == "AGCF" %}
+			<option value = "AGCF" selected>ANDROMEDA</option>
+		{% else %}
+			<option value = "AGCF">ANDROMEDA</option>
+		{% endif %}
+		{% if account == "ACPT" %}
+			<option value = "ACPT" selected>ASPEN CREEK</option>
+		{% else %}
+			<option value = "ACPT">ASPEN CREEK</option>
+		{% endif %}
+		{% if account == "INC5" %}
+			<option value = "INC5" selected>BALDR DRACO</option>
+		{% else %}
+			<option value = "INC5">BALDR DRACO</option>
+		{% endif %}
+		{% if account == "INC0" %}
+			<option value = "INC0" selected>BALDR DRACO SERIES B</option>
+		{% else %}
+			<option value = "INC0">BALDR DRACO SERIES B</option>
+		{% endif %}
+		{% if account == "HART" %}
+			<option value = "HART" selected>HARTZ</option>
+		{% else %}
+			<option value = "HART">HARTZ</option>
+		{% endif %}
+		-->
+		{% if account == "PGOF" %}
+			<option value = "PGOF" selected>ACCOUNT:&nbsp;&nbsp;&nbsp;PERSEUS</option>
+		{% else %}
+			<option value = "PGOF">ACCOUNT:&nbsp;&nbsp;&nbsp;PERSEUS</option>
+		{% endif %}
+	</select>
+	<br /><br />
+	<table style="width:100%;float:left">
+		<thead  id="summary1">
+            <tr>
+                <td style="text-align:center;">Account Value</td>
+                <td style="text-align:center;text-decoration:underline;cursor:pointer" id="cash-projection">Cash & Cash Invest.</td>
+                <td style="text-align:center;">Market Value</td>
+                <td style="text-align:center;">Cost Basis</td>
+                <td style="text-align:center;">Unrealized G/L</td>
+                <td style="text-align:center;">YTD P&L</td>
+                <td style="text-align:center;">Daily P&L</td>
+			<tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="text-align:center;">{{accountValue}}</td>
+			    <td id="tradable_cash" style="text-align:center;">{{cash}}</td>
+			    <td style="text-align:center;">{{marketValue}}</td>
+			    <td style="text-align:center;">{{costBasis}}</td>
+			    <td style="text-align:center;">{{gainLoss}}</td>
+			    <td style="text-align:center;" id="lsterm_GL">{{gainLossSumYTD}}</td>
+			    <td style="text-align:center;">{{dailyPNL}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<div id="graph_container1" style="width:50%; height: 500px; margin: 20 auto; float:right; display: inline-block"></div>
+	<div id="graph_container2" style="width:50%; height: 500px; margin: 20 auto; float:left"></div>
+	<div id="calender-container" style="width:50%; height: 500px; margin: 20 auto; float:left"><div id='calendar'></div></div>
+	<div id="graph_container3" style="width:50%; height: 500px;  margin: 20 auto; float:right"></div>
+	<br /><br />
+	<select id="group" name="group" onchange="refresh()">
+		{% if group == "all" %}
+			<option value = "all" selected>GROUP BY:&nbsp;&nbsp;&nbsp;ALL</option>
+		{% else %}
+			<option value = "all">GROUP BY:&nbsp;&nbsp;&nbsp;ALL</option>
+		{% endif %}
+		{% if group == "securityType" %}
+			<option value = "securityType" selected>GROUP BY:&nbsp;&nbsp;&nbsp;CATEGORY</option>
+		{% else %}
+			<option value = "securityType">GROUP BY:&nbsp;&nbsp;&nbsp;CATEGORY</option>
+		{% endif %}
+		{% if group == "category2" %}
+			<option value = "category2" selected>GROUP BY:&nbsp;&nbsp;&nbsp;COUNTRY</option>
+		{% else %}
+			<option value = "category2">GROUP BY:&nbsp;&nbsp;&nbsp;COUNTRY</option>
+		{% endif %}
+		{% if group == "currType" %}
+			<option value = "currType" selected>GROUP BY:&nbsp;&nbsp;&nbsp;CURRENCY</option>
+		{% else %}
+			<option value = "currType">GROUP BY:&nbsp;&nbsp;&nbsp;CURRENCY</option>
+		{% endif %}
+	</select>
+	<br /><br />
+	<div id="ls-term-gainloss-popup">
+        <div class="title">LT/ST Capital Gain/Loss</div>
+            <table id="ls-term-gainloss-info">
+            	<thead id="ls-term-gainloss-info-header">
+            		<tr>
+            			<td>Type</td>
+            			<td>Amount</td>
+            		</tr>
+            	</thead>
+                <tbody></tbody>
+            </table>
+    </div>
+    <div id="cash-component-popup">
+       	<div class="title">Cash Details</div>
+        <table id="cash-component-info">
+        	<thead id="cash-component-info-header">
+            		<tr>
+            			<td>Type</td>
+            			<td>Amount</td>
+            		</tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+	</div>
+	<div id="cost-basis-popup" class ="popup">
+        <div class="title">ABC 1.2% 34/56/7890</div>
+        <div class="details">
+            <table id="cost-basis-info" class="popup-info">
+                <thead id="cost-basis-info-header">
+                    <tr>
+                        <td>Trade Date</td>
+                        <td>Quantity</td>
+                        <td>Price</td>
+                        <td>FX Rate</td>
+                        <td>UnRz G/L</td>
+                    </tr>
+                </thead>                
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="cost-basis-footnotes" class = "popup-footnotes"> *All number in denominated currency</div>
+    </div>
+    
+    <div id="open-trans-popup" class ="popup">
+        <div class="title">ABC 1.2% 34/56/7890</div>
+        <div class="details">
+            <table id="open-trans-info" class = "popup-info">
+                <thead id="open-trans-info-header">
+                    <tr>
+                        <td>Trade Date</td>
+                        <td>Quantity</td>
+                        <td>Price</td>
+                        <td>FX Rate</td>
+                        <td>Broker</td>
+                    </tr>
+                </thead>                
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="open-trans-footnotes" class = "popup-footnotes"> *All number in denominated currency</div>
+    </div>
+	<table id="open-position-report">
+        <thead id="full-position-list-header">
+            <tr>
+                <td class="sort" data-sort="issuer" style="text-align:center;">Issuer</td>
+
+                <td class="sort" data-sort="country" style="text-align:center;">Country</td>
+                <td class="sort" data-sort="type" style="text-align:center;">Security Type</td>
+                
+                <td class="sort" data-sort="coupon" style="text-align:center;">Coupon</td>
+                <td class="sort" data-sort="maturity" style="text-align:center;">Maturity</td>
+                <td class="sort" data-sort="quantity" style="text-align:center;">Quantity</td>
+                <td class="sort" data-sort="price" style="text-align:center;">Price</td>
+                <td class="sort" data-sort="ai" style="text-align:center;">AI</td>
+                <td class="sort" data-sort="mv" style="text-align:center;">Market Value</td>
+                <td class="sort" data-sort="weight" style="text-align:center;">Weight(%) </td>
+                
+                <td class="sort" data-sort="duration" style="text-align:center;">Duration</td>
+                <td class="sort" data-sort="yield" style="text-align:center;">Yield</td>
+                <td class="sort" data-sort="gspread" style="text-align:center;">G-Spread</td>
+                
+                <td class="sort" data-sort="dtd" style="text-align:center;">DTD Px(%)</td>
+                <td class="sort" data-sort="mtd" style="text-align:center;">MTD Px(%)</td>
+                <td class="sort" data-sort="cb" style="text-align:center;">Cost Basis</td>
+                <td class="sort" data-sort="pnl" style="text-align:center;">UnRz G/L</td>
+                <td>Crn</td>
+                <td>ISIN</td>
+            </tr>
+        </thead>
+        
+        <!-- Account total -->
+        <tfoot id="full-position-list-footer">
+            <tr>
+                <td>Account Total</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td id="account-mv-total"  style="text-align: right; padding: 0 10px">#N/A</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td id="account-cb-total"  style="text-align: right; padding: 0 10px">#N/A</td>
+                <td id="account-pnl-total"  style="text-align: right; padding: 0 10px">#N/A</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+    	var sortMethond = "ascend"
+        $(document).ready(function () {
+        	$("#secondary-navigation").show()        	
+        	var category_mapping = { 
+        						'ALL':'ALL',
+        						'BOND':'BOND',
+        						'EQTY':'EQUITY',
+        						'REPO':'REPO',
+        						'FUT':'FUTURE',
+        						'FX':'FORWARD',
+        						'CDS':'CDS',
+        						'OPTION':'OPTION',
+        						'CASH':'CASH',
+        						'AR':'Argentina', 
+        						'DE':'Germany',
+        						'GR':'Greece', 
+        						'PH':'Phllippine', 
+        						'BR':'Brazil', 
+        						'VE':'Venezuela', 
+        						'UA':'Ukraine',
+        						'US':'United States',
+        						'RU':'Russia',
+        						'KZ':'Kazakhstan',
+        						'GB':'United Kindom',
+        						'NL':'Netherlands',
+        						'CH':'Switzerland',
+        						'IL':'Israel',
+        						'EC':'Ecuador',
+        						'EG':'Egypt',
+        						'NG':'Nigeria',
+        						'JP':'Japan',
+        						'AT':'Austria',
+        						'CA':'Canada',
+        						'CI':'Ivory Coast',
+        						'CR':'Costa Rica',
+        						'PE':'Peru',
+        						'PR':'Puerto Rico',
+        						'VN':'Vietnam',
+        						'PA':'Panama',
+        						'SA':'Saudi Arabia',
+        						'OTHERS':'Others',
+        						'USD':'USD',
+        						'EUR':'EUR',
+        						'ARS':'ARS',
+        						'GBP':'GBP' }
+        						
+            var positionList0 = {{positionList|safe}}
+            var positionList = [];
+            var categoryweight = Array(positionList0.length).fill(0)
+            for (ii = 0; ii < positionList0.length ; ii++) {
+                for (jj = 0; jj < positionList0[ii].details.length; jj++) {
+                    categoryweight[ii] += positionList0[ii].details[jj].Weight;
+                }
+                if (positionList0[ii].categoryName == "OTHERS"){
+                	categoryweight[ii]=-98
+                }
+            }
+            
+            categoryweight[categoryweight.length-1] = -99
+            
+            
+            var cate_sorted = categoryweight.slice().sort(function (a, b) { return b - a })
+            var cate_ranks = categoryweight.slice().map(function (v) { return cate_sorted.indexOf(v) + 1 })
+            for (aa = 0; aa < categoryweight.length; aa++) {
+                positionList.push(positionList0[categoryweight.indexOf(cate_sorted[aa])])
+            }
+            var sum_account_mv = 0, sum_account_cb = 0, sum_account_pnl = 0;
+            for (i = 0; i < Object.keys(positionList).length; i++) {
+                var temp_class = positionList[i].class
+                var temp_Category = positionList[i].categoryName
+                var temp_tbody_headerline = "<tbody class=\"" + temp_class + " groupheader-row\" id=\"" + temp_class + "-header-row\">"
+                var temp_tr = " <tr class=group-collapsed id=" + temp_class + "-collapse-header><td class=\"grouping wrappable\" colspan=\"1\">"
+                var temp_control_button = "<a href=\"javascript:void(0)\"; class= \"expandcollapse collapse-anchor\" id=\"" + temp_class + "-expand-icon\" data-groupid=\"" + temp_class + "\" data-fundName=\"Perseus\"><span class=\"sr-only\">+</span></a><h4 class=\"type-name\">" + category_mapping[temp_Category] + "</h4></td>"
+                var temp_title_collapse = "<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class=\"" + temp_class + "-mv-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td class=\"" + temp_class + "-weight-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td></td><td></td><td></td><td></td><td></td><td class=\"" + temp_class + "-cb-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td class=\"" + temp_class + "-pnl-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td></td><td></td></tr>"
+                var temp_tr2 = "<tr class=\"group-expanded\" id=\"" + temp_class + "-expand-header\" style=\"display:none\"><td class=\"grouping wrappable\" colspan=\"1\">"
+                var temp_control_button2 = "<a href=\"javascript:void(0);\" class=\"expandcollapse expand-anchor\" id=\"" + temp_class + "-collapse-icon\" data-groupid=\"" + temp_class + "\" data-fundName=\"Perseus\">"
+                var temp_title_expand = "<span class=\"sr-only\">-</span></a><h4 class=\"type-name\">" + category_mapping[temp_Category] + "</h4></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>"
+
+                $("#open-position-report").append(temp_class + temp_Category + temp_tbody_headerline + temp_tr + temp_control_button + temp_title_collapse + temp_tr2 +temp_control_button2+ temp_title_expand + "</tbody>")
+
+                var temp_detail_position_id = temp_class + "-position-full-details"
+                var temp_tbody_container = "<tbody class=\"security-position-list\" id=\"" + temp_detail_position_id + "\" style=\"display:none\">"
+                var temp_detail_keys = Object.keys(positionList[i].details)
+                var temp_tbody_content = "";
+                for (j = 0; j < temp_detail_keys.length; j++) {
+                    var tempissuer = positionList[i].details[j].Issuer
+                    var tempcountry = positionList[i].details[j].Country
+                    var temptype = positionList[i].details[j].Category
+                    var tempcoupon = positionList[i].details[j].Coupon
+                    var tempmaturity = positionList[i].details[j].Maturity
+                    var tempquantity = positionList[i].details[j].Quantity
+                    var tempprice = positionList[i].details[j].Price
+                    var tempai = positionList[i].details[j].AI
+                    var tempmv = positionList[i].details[j].MarketValue
+                    var tempweight = positionList[i].details[j].Weight
+                    
+                    var tempduration = positionList[i].details[j].Duration
+                    var tempytm = positionList[i].details[j].YTM
+                    var tempgspread = positionList[i].details[j].GSpread
+                    
+                    var tempdtdpxchg = positionList[i].details[j].DTDPxChg
+                    var tempmtdpxchg = positionList[i].details[j].MTDPxChg
+                    var tempcb = positionList[i].details[j].CostBasis
+                    var temppnl = positionList[i].details[j].Pnl
+                    var tempcurrency = positionList[i].details[j].Currency
+                    var tempisin = positionList[i].details[j].ISIN
+                    if (temp_class == 'EURO' || temp_class == 'REPO' || temp_class == 'CDS') { tempprice = tempprice.toFixed(2).toString() + "%" }
+                    if (temp_class == 'EQTY' || temp_class == 'FUT'){tempprice = tempprice.toFixed(2)}
+                    if (temp_class == 'OPTION'){tempprice = tempprice.toFixed(4)}
+                    temp_tbody_content = temp_tbody_content + "<tr><td class=\"issuer\" data-x=\"" + i + "\" data-y=\"" + j + "\" style=\"text-align: center\">" + tempissuer + "</td><td class=\"country\" style=\"text-align: center\">" + tempcountry + "</td><td class=\"type\" style=\"text-align: center\">" + temptype + "</td><td class=\"coupon\" style=\"text-align: right\">" + tempcoupon.toFixed(2) + "</td><td class=\"maturity\" style=\"text-align: right\">" + tempmaturity + "</td><td class=\"quantity\" style=\"text-align: right\">" + formatNumber(tempquantity.toFixed(0)) + "</td><td  class=\"price\" style=\"text-align: right\">" + tempprice + "</td><td class=\"ai\" style=\"text-align: right\">" + formatNumber(tempai.toFixed(2)) + "</td><td class=\"" + temp_class + "-mv mv\"  style=\"text-align: right\">" + formatNumber(tempmv.toFixed(2)) + "</td><td class=\"" + temp_class + "-weight weight\"  style=\"text-align: right\">" + tempweight.toFixed(2) + "%</td><td class=\"duration\" style=\"text-align: right\">" + tempduration.toFixed(1) + "</td><td class=\"yield\" style=\"text-align: right\">" + tempytm.toFixed(1) + "%</td><td class=\"gspread\" style=\"text-align: right\">" + tempgspread.toFixed(0) + "</td><td class=\"dtd\" style=\"text-align: right\">" + tempdtdpxchg.toFixed(2) + "%</td><td class=\"mtd\" style=\"text-align: right\">" + tempmtdpxchg.toFixed(2) + "%</td><td class=\"" + temp_class + "-cb cb\"  style=\"text-align: right\">" + formatNumber(tempcb.toFixed(2)) + "</td><td class=\"" + temp_class + "-pnl pnl\"  style=\"text-align: right\">" + formatNumber(temppnl) + "</td><td class=\"curncy\">" + tempcurrency + "</td><td class=\"isin\">" + tempisin + "</td></tr>"
+                }
+                $("#open-position-report").append(temp_tbody_container + temp_tbody_content + "</tbody>")
+                var temp_footer = "<tbody class=\"footer-row\" id=\"" + temp_class + "-footer-row\" style=\"display:none\"><tr ><td><h4>" + category_mapping[temp_Category] + " Total</h4></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class=\"" + temp_class + "-mv-subtotal\" id=" + temp_class + "-mv-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td class=\"" + temp_class + "-weight-subtotal\" id=\"" + temp_class + "-weight-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td></td><td></td><td></td><td></td><td></td><td class=\"" + temp_class + "-cb-subtotal\" id=\"" + temp_class + "-cb-subtotal\"  style=\"text-align: right; padding: 0 10px\">#N/A</td><td class=\"" + temp_class + "-pnl-subtotal\" id=\"" + temp_class + "-pnl-subtotal\" style=\"text-align: right; padding: 0 10px\">#N/A</td><td></td><td></td></tr></tbody>"
+                $("#open-position-report").append(temp_footer)
+
+                var sum_temp_mv = 0, sum_temp_weight = 0, sum_temp_cb = 0, sum_temp_pnl = 0;
+                $("." + temp_class + "-mv").each(function () {
+                    temp_value = unformatNumber($(this).text())
+                    if (!isNaN(temp_value) && temp_value.length != 0) {
+                        sum_temp_mv += parseFloat(temp_value);
+                    }
+                });
+                $("." + temp_class + "-weight").each(function () {
+                    temp_value = unformatNumber($(this).text())
+                    if (!isNaN(temp_value) && temp_value.length != 0) {
+                        sum_temp_weight += parseFloat(temp_value);
+                    }
+                });
+                $("." + temp_class + "-cb").each(function () {
+                    temp_value = unformatNumber($(this).text())
+                    if (!isNaN(temp_value) && temp_value.length != 0) {
+                        sum_temp_cb += parseFloat(temp_value);
+                    }
+                });
+                $("." + temp_class + "-pnl").each(function () {
+                    temp_value = unformatNumber($(this).text())
+                    if (!isNaN(temp_value) && temp_value.length != 0) {
+                        sum_temp_pnl += parseFloat(temp_value);
+                    }
+                });
+                $('.' + temp_class + '-mv-subtotal').text(formatNumber(sum_temp_mv.toFixed(2)));
+                $('.' + temp_class + '-weight-subtotal').text(sum_temp_weight.toFixed(2) + "%");
+                $('.' + temp_class + '-cb-subtotal').text(formatNumber(sum_temp_cb.toFixed(2)));
+                $('.' + temp_class + '-pnl-subtotal').text(formatNumber(sum_temp_pnl.toFixed(2)));
+
+                sum_account_mv += sum_temp_mv
+                sum_account_cb += sum_temp_cb
+                sum_account_pnl += sum_temp_pnl
+                $('#account-mv-total').text(formatNumber(sum_account_mv.toFixed(2)));
+                $('#account-cb-total').text(formatNumber(sum_account_cb.toFixed(2)));
+                $('#account-pnl-total').text(formatNumber(sum_account_pnl.toFixed(2)));
+                
+                $('#CASH-expand-icon').removeClass('collapse-anchor')
+                $('#CASH-expand-icon').children('span').text(' ')
+                $('#CASH-position-full-details').remove()
+                $('#CASH-footer-row').remove()
+
+                delete temp_tbody_headerline, temp_tr, temp_control_button
+
+            }
+                        
+            $(".collapse-anchor").click(function () {
+                var temp_cate = $('#' + this.id).attr("data-groupid")
+                $("#" + temp_cate + "-collapse-header").css("display", "none");
+                $("#" + temp_cate + "-expand-header").css("display", "table-row");
+                $("#" + temp_cate + "-position-full-details").css("display", "table-row-group");
+                $("#" + temp_cate + "-footer-row").css("display", "table-row-group");
+                delete temp_cate
+            });
+            $(".expand-anchor").click(function () {
+                var temp_cate = $('#' + this.id).attr("data-groupid")
+                $("#" + temp_cate + "-collapse-header").css("display", "table-row");
+                $("#" + temp_cate + "-expand-header").css("display", "none");
+                $("#" + temp_cate + "-position-full-details").css("display", "none");
+                $("#" + temp_cate + "-footer-row").css("display", "none");
+                delete temp_cate
+            });
+            $(".cb").click(function () {
+            	$("#cost-basis-info tbody tr").remove()                
+                i_index = $(this).closest("td").siblings(".issuer").attr('data-x')
+                j_index = $(this).closest("td").siblings(".issuer").attr('data-y')
+                if (positionList[i_index].details[j_index].Category == "BOND" || positionList[i_index].categoryName == "BOND") {
+                    var SecName = positionList[i_index].details[j_index].Issuer + '&nbsp' + positionList[i_index].details[j_index].Coupon + '%&nbsp' + positionList[i_index].details[j_index].Maturity
+                }
+                if (positionList[i_index].details[j_index].Category == "REPO" || positionList[i_index].categoryName == "REPO") {
+                    var SecName = positionList[i_index].details[j_index].Issuer + "&nbsp REPO &nbsp" + positionList[i_index].details[j_index].Coupon + '&nbsp%'
+                }                  
+                if (positionList[i_index].details[j_index].Category == "EQTY" || positionList[i_index].categoryName == "EQTY") {
+                    var SecName = positionList[i_index].details[j_index].Issuer
+                }
+ 
+                if (positionList[i_index].details[j_index].Category == "FUT" || positionList[i_index].categoryName == "FUT") {
+                    var SecName = positionList[i_index].details[j_index].ISIN
+                }
+                $("#cost-basis-popup .title").html(SecName)
+                for(k = 0;k<positionList[i_index].details[j_index].CbDetails.length;k++ ){
+                	var tempCBInfo = "<tr><td>" + positionList[i_index].details[j_index].CbDetails[k].TradeDate + "</td><td>" + formatNumber(positionList[i_index].details[j_index].CbDetails[k].Quantity) + "</td><td>" + positionList[i_index].details[j_index].CbDetails[k].Price + "</td><td>" + positionList[i_index].details[j_index].CbDetails[k].FxRate + "</td><td>" + formatNumber(positionList[i_index].details[j_index].CbDetails[k].Pnl.toFixed(0)) + "</td></tr>"
+                    $("#cost-basis-info tbody").append(tempCBInfo)
+				}
+				var e = window.event;
+                var posX = e.pageX;
+                var posY = e.pageY;
+                var w = $("#cost-basis-popup").width()
+                var h = $("#cost-basis-popup").height()
+                $("#cost-basis-popup").css("left", (posX - w - 45) + "px");
+                $("#cost-basis-popup").css("top", (posY - h - 20) + "px");
+                $("#cost-basis-popup").fadeIn(400)
+            })
+        	$(".cb").mouseleave(function () {
+            	$("#cost-basis-popup").fadeOut(100)
+            	$("#cost-basis-info tbody tr").remove()
+        	})
+        	
+        	
+        	$(".isin").click(function () {
+            	$("#open-trans-info tbody tr").remove()                
+                i_index = $(this).closest("td").siblings(".issuer").attr('data-x')
+                j_index = $(this).closest("td").siblings(".issuer").attr('data-y')
+                if (positionList[i_index].details[j_index].Category == "BOND" || positionList[i_index].categoryName == "BOND") {
+                    var SecName = positionList[i_index].details[j_index].Issuer + '&nbsp' + positionList[i_index].details[j_index].Coupon + '%&nbsp' + positionList[i_index].details[j_index].Maturity
+                }
+                if (positionList[i_index].details[j_index].Category == "REPO" || positionList[i_index].categoryName == "REPO") {
+                    var SecName = positionList[i_index].details[j_index].Issuer + "&nbsp REPO &nbsp" + positionList[i_index].details[j_index].Coupon + '&nbsp%'
+                }                  
+                if (positionList[i_index].details[j_index].Category == "EQTY" || positionList[i_index].categoryName == "EQTY") {
+                    var SecName = positionList[i_index].details[j_index].Issuer
+                }
+ 
+                if (positionList[i_index].details[j_index].Category == "FUT" || positionList[i_index].categoryName == "FUT") {
+                    var SecName = positionList[i_index].details[j_index].ISIN
+                }
+                
+                if (positionList[i_index].details[j_index].Category == "OPTION" || positionList[i_index].categoryName == "OPTION") {
+                    var SecName = positionList[i_index].details[j_index].ISIN
+                }
+                if (positionList[i_index].details[j_index].Category == "CDS" || positionList[i_index].categoryName == "CDS") {
+                    var SecName = positionList[i_index].details[j_index].Issuer + '&nbsp' + positionList[i_index].details[j_index].Coupon + '%&nbsp' + positionList[i_index].details[j_index].Maturity
+                }
+                $("#open-trans-popup .title").html(SecName)
+                for(k = 0;k<positionList[i_index].details[j_index].OTDetails.length;k++ ){
+                	var tempOTInfo = "<tr><td>" + positionList[i_index].details[j_index].OTDetails[k].TradeDate + "</td><td>" + formatNumber(positionList[i_index].details[j_index].OTDetails[k].Quantity) + "</td><td>" + positionList[i_index].details[j_index].OTDetails[k].Price + "</td><td>" + positionList[i_index].details[j_index].OTDetails[k].FxRate + "</td><td>" + positionList[i_index].details[j_index].OTDetails[k].Broker + "</td></tr>"
+                    $("#open-trans-info tbody").append(tempOTInfo)
+				}
+				var e = window.event;
+                var posX = e.pageX;
+                var posY = e.pageY;
+                var w = $("#open-trans-popup").width()
+                var h = $("#open-trans-popup").height()
+                $("#open-trans-popup").css("left", (posX - w - 45) + "px");
+                $("#open-trans-popup").css("top", (posY - h - 20) + "px");
+                $("#open-trans-popup").fadeIn(400)
+            })
+        	$(".isin").mouseleave(function () {
+            	$("#open-trans-popup").fadeOut(100)
+            	$("#open-trans-info tbody tr").remove()
+        	})
+        	
+        	var gainloss = {
+        		"UnrealizedGL":{{gainLossYTD|safe}},
+            	"ShortTerm":{{shortTermGL|safe}},
+            	"LongTerm": {{longTermGL|safe}}
+        	}
+        	var cash_component = {{cash_component|safe}}
+        	
+        	$("#lsterm_GL").click(function () {
+	            $("#ls-term-gainloss-info tbody tr").remove()
+	            
+	            var temp = "<tr><td> Unrealized G/L</td><td style=\"text-align:right; padding-left: 10px;\">" + formatNumber(gainloss.UnrealizedGL) + "</td>"
+	            $("#ls-term-gainloss-info tbody").append(temp)
+	 
+	            var temp = "<tr><td> Short-term Realized </td><td style=\"text-align:right; padding-left: 10px;\">" + formatNumber(gainloss.ShortTerm) + "</td>"
+	            $("#ls-term-gainloss-info tbody").append(temp)
+	            var temp = "<tr><td> Long-term Realized </td><td style=\"text-align:right; padding-left: 10px\">" + formatNumber(gainloss.LongTerm) + "</td>"
+	            $("#ls-term-gainloss-info tbody").append(temp)
+	 
+	            var e = window.event;
+	            var posX = e.pageX;
+	            var posY = e.pageY;
+	            var w = $("#ls-term-gainloss-popup").width()
+	            var h = $("#ls-term-gainloss-popup").height()
+	            $("#ls-term-gainloss-popup").css("left", (posX - w - 15) + "px");
+	            $("#ls-term-gainloss-popup").css("top", (posY ) + "px");
+	            $("#ls-term-gainloss-popup").fadeIn(400)
+	        })
+	        $("#lsterm_GL").mouseleave(function () {
+	            $("#ls-term-gainloss-popup").fadeOut(200)
+	            $("#ls-term-gainloss-popup tbody tr").remove()
+	        })
+	        $("#tradable_cash").click(function () {
+	            $("#cash-component-info tbody tr").remove()
+	 
+	            var temp = "<tr><td> US Bank </td><td style=\"text-align:right; padding-left: 10px\">" + formatNumber(cash_component.USBK) + "</td>"
+	            $("#cash-component-info tbody").append(temp)
+	            var temp = "<tr><td> Interactive Broker </td><td style=\"text-align:right; padding-left: 10px\">" + formatNumber(cash_component.ITBK) + "</td>"
+	            $("#cash-component-info tbody").append(temp)
+	            var temp = "<tr style=\"font-weight:500\"><td> Total Available Fund </td><td style=\"text-align:right; padding-left: 10px;\">" + formatNumber(cash_component.Total) + "</td>"
+	            $("#cash-component-info tbody").append(temp)
+	 
+	            var e = window.event;
+	            var posX = e.pageX;
+	            var posY = e.pageY;
+	            var w = $("#cash-component-popup").width()
+	            var h = $("#cash-component-popup").height()
+	            $("#cash-component-popup").css("left", (posX - w - 15) + "px");
+	            $("#cash-component-popup").css("top", (posY ) + "px");
+	            $("#cash-component-popup").fadeIn(400)
+	        })
+	        $("#tradable_cash").mouseleave(function () {
+	            $("#cash-component-popup").fadeOut(200)
+	            $("#cash-component-popup tbody tr").remove()
+	        })
+        	$(".sort").click(function () {
+        		if (sortMethond == "ascend") {
+        			sortMethond = "descend"
+        		}else{
+        			if (sortMethond == "descend") {
+        				sortMethond = "ascend"
+        			}
+        		}
+        		
+                var tempSortBase = $(this).attr("data-sort")
+                var tb = $("#open-position-report").children('.security-position-list');               
+                tb.each(function () {
+                    var trow = $(this).children('tr')
+                    var SortBase = "." +tempSortBase
+                    if (sortMethond == "ascend") {                        
+                        trow.sort(function (A, B) {
+                            if (tempSortBase == "issuer" || tempSortBase == "crncy"|| tempSortBase == "country" || tempSortBase == "type" ) {
+                                var XX = $(A).children(SortBase).text()
+                                var YY =$(B).children(SortBase).text()
+                                if(XX==""||XX==null){XX="AA"}
+                                if(YY==""||YY==null){YY="AA"}
+                            } else {
+                                if (tempSortBase == "maturity") {
+                                    var tempXX = $(A).children(SortBase).text().split('/')
+                                    var tempYY = $(B).children(SortBase).text().split('/')
+                                    var XX = parseInt(tempXX[2])*10000+parseInt(tempXX[0])*100+parseInt(tempXX[1])
+                                    var YY = parseInt(tempYY[2])*10000+parseInt(tempYY[0])*100+parseInt(tempYY[1])
+                                    if(isNaN(XX)){XX=10999999}
+									if(isNaN(YY)){YY=10999999}
+                                } else {
+                                    var XX = unformatNumber($(A).children(SortBase).text())
+                                    var YY = unformatNumber($(B).children(SortBase).text())
+                                }
+                            }
+                            return ((YY < XX) ? -1 : ((YY > XX) ? 1 : 0));
+                        }).appendTo($(this))                       
+                    } else {
+                        if (sortMethond == "descend") {
+                            trow.sort(function (A, B) {
+                                if (tempSortBase == "issuer" || tempSortBase == "crncy" || tempSortBase == "country" || tempSortBase == "type" ) {
+                                    var XX = $(A).children(SortBase).text()
+                                    var YY = $(B).children(SortBase).text()
+                                    if(XX==""||XX==null){XX="ZZ"}
+                                	if(YY==""||YY==null){YY="ZZ"}
+                                } else {
+                                    if (tempSortBase == "maturity") {
+                                    	var tempXX = $(A).children(SortBase).text().split('/')
+                                    	var tempYY = $(B).children(SortBase).text().split('/')
+                                        var XX = parseInt(tempXX[2])*10000+parseInt(tempXX[0])*100+parseInt(tempXX[1])
+                                        var YY = parseInt(tempYY[2])*10000+parseInt(tempYY[0])*100+parseInt(tempYY[1])
+                                        if(isNaN(XX)){XX=20999999}
+										if(isNaN(YY)){YY=20999999}
+                                        
+                                    } else {
+                                        var XX = unformatNumber($(A).children(SortBase).text())
+                                        var YY = unformatNumber($(B).children(SortBase).text())
+                                    }
+                                }
+                                return ((YY > XX) ? -1 : ((YY < XX) ? 1 : 0));
+                            }).appendTo($(this))
+                        }
+                    }
+                });
+            })
+
+        });
+        function formatNumber(num) { //add thousand seperator
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+        }
+        function unformatNumber(str) { //replace thousand seperator
+            if (/%$/.test(str)) { str.replace("%","")}
+            var temp = str
+            temp = str.replace(/,/g, "")
+            num = parseFloat(temp)
+            return num
+        }
+        
+        var Monthly_return = {{monthlyReturn|safe}}
+        var YTD_return = {{returnList|safe}}
+
+        var category_labels= {{country_labels_list|safe}}
+        var weights = {{country_weights_list|safe}}
+        var country_mapping = { 'AR':'Argentina', 
+        						'DE':'Germany',
+        						'GR':'Greece', 
+        						'PH':'Phllippine', 
+        						'BR':'Brazil', 
+        						'VE':'Venezuela', 
+        						'UA':'Ukraine',
+        						'US':'United States',
+        						'RU':'Russia',
+        						'KZ':'Kazakhstan',
+        						'GB':'United Kindom',
+        						'NL':'Netherlands',
+        						'CH':'Switzerland',
+        						'IL':'Israel',
+        						'EC':'Ecuador',
+        						'EG':'Egypt',
+        						'NG':'Nigeria',
+        						'JP':'Japan',
+        						'AT':'Austria',
+        						'CA':'Canada',
+        						'CI':'Ivory Coast',
+        						'CR':'Costa Rica',
+        						'PE':'Peru',
+        						'PR':'Puerto Rico',
+        						'VN':'Vietnam',
+        						'PA':'Panama',
+        						'SA':'Saudi Arabia',
+        						'OTHERS':'Others' }
+
+        Highcharts.chart('graph_container1', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Portfolio Constituents'
+            },
+            subtitle: {
+                text: 'Source: CCM Database'
+            },
+            xAxis: {
+                categories: category_labels
+            },
+            yAxis: {
+                title: {
+                    text: 'Weight( %)'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value + '.0%';
+                    }
+                }
+            },
+            plotOptions:{
+            	column:{
+            		color:'green',
+            		negativeColor:'red'
+            	}
+            },
+            credits: {
+                enabled: false
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<span style="font-size: 10px">' + country_mapping[this.x] + '</span><br/>' +
+                    'Perseus: <b>'+this.y+'%</b>';
+                }
+            },
+            series: weights
+        });
+
+        Highcharts.chart('graph_container2', {
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: 'Gross Return'
+            },
+            subtitle: {
+                text: 'Source: CCM Database'
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec','Jan-2018']
+            },
+            yAxis: {
+                title: {
+                    text: 'Returns( %)'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value + '.0%';
+                    }
+                }
+            },
+            tooltip: {
+                crosshairs: true,
+                shared: true
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                spline: {
+                    marker: {
+                        radius: 4,
+                        lineColor: '#666666',
+                        lineWidth: 1
+                    }
+                },
+                column:{
+            		color:'green',
+            		negativeColor:'red'
+            	}
+            },
+            series: [{
+                name: "Monthly",
+                type:'column',
+                data: Monthly_return,
+                tooltip:{
+                	valueSuffix:' %',
+                }
+            },{
+            	name: "YTD",
+                type:'spline',
+                data: YTD_return,
+                tooltip:{
+                	valueSuffix:' %',
+                },
+            }]
+        });
+        
+        var cf_projection = {{cashFlowList|safe}};
+        
+        var today = new Date()
+        var month_mapping = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' }
+        var months = [];
+        for (var i = 0; i <= 11; i++) {
+            months.push(month_mapping[(i + today.getMonth()) % 12]);
+        }
+        
+        var cashflow = {{monthlyCashFlow|safe}}
+        
+        $("#cash-projection").click(function () {           
+            if ($("#graph_container2").is(':visible')) {
+                $("#graph_container2").hide()
+                $("#graph_container1").hide()
+                $("#graph_container3").fadeIn(400)
+                $("#calender-container").fadeIn(400)
+ 
+                $('#calendar').fullCalendar({
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month,agendaWeek,agendaDay,listWeek'
+                    },
+                    //defaultDate: '2017-05-12',
+                    navLinks: true, // can click day/week names to navigate views
+                    //editable: true,
+                    height: 500,
+                    eventLimit: true, // allow "more" link when too many events
+                    events: cf_projection,
+                  
+                });
+                Highcharts.chart('graph_container3', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Cash Flow Projection'
+                    },
+                    subtitle: {
+                        text: 'Source: CCM Database'
+                    },
+                    xAxis: {
+                        categories: months,
+                        crosshair: true
+                    },
+                    yAxis: {                        
+                        title: {
+                            text: ''
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    credits: {
+                		enabled: false
+            		},
+                    plotOptions: {
+                        column: {
+                            pointPadding: 0.2,
+                            borderWidth: 0
+                        }
+                    },
+                    series: cashflow
+                });
+            } else {
+                $("#calender-container").hide()
+                $("#graph_container2").fadeIn(400)
+                $("#graph_container3").hide()
+                $("#graph_container1").fadeIn(400)
+            }
+          
+        })
+    </script>
+</form>
+{% endblock %}

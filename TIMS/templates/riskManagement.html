@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts-en.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <style>
+        body {
+            margin-top:60px;
+        }
+        #risk-report-title{
+            font-size: 20px;
+        }
+        #container {
+            
+        }
+        #performance-vs-benchmark{
+            background-color:#e1dede;
+            width:66%;
+            height:800px;
+            backface-visibility:hidden;
+            
+        }
+        #chart-container {
+            margin: 20px 10px 10px 10px;
+            width:100%;
+            height:500px;
+            backface-visibility:hidden;
+
+        }
+        #Performance-figure {
+        }
+        #portfolio-risk-exposure {
+            background-color:#e1dede;
+            width:66%;
+            height:800px;
+           
+
+        }
+        #sunburst-container {
+            width:80%;
+            height:800px;
+            backface-visibility:hidden;
+            float:left
+        }
+        .front {
+            transform-style: preserve-3d; 
+            position: absolute;
+            transition: all 0.36s ease-OUT;
+
+        }
+        .back {
+            transform-style: preserve-3d; 
+            position: absolute;
+            transition: all 0.36s ease-out;
+        }
+        .face-front {
+            z-index:1
+        }
+        .face-back {
+            z-index:0;  
+        }
+        #bond-portfolio-description {
+            width:32%;
+            position:relative;
+            float:right;
+        }
+        
+        #performance-figure-table {
+            height: 100px;
+            overflow: hidden;
+            list-style-type: none;
+
+
+        }
+        .performance-figure-title {
+            font-weight:500;
+            font-size:16px;
+            color:grey;
+        }
+        #performance-figure-table li{
+            width:30%;
+            height:100px;
+            display: list-item;
+            float: left;
+            text-align:center;
+            overflow:hidden
+            
+        }
+        .block {
+            display:block;
+        }
+        .portfolio-value {
+            font-size:21px;
+            font-weight:500;
+            margin:10px 0;
+        }
+        .benchmark-value {
+            font-size:14px;
+            display:none;
+        }
+        .names{
+            display:none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="risk-report-title">Risk Report</div>
+    <button id="rotate">Rotate</button>
+    <div id="container">
+    <div id="performance-vs-benchmark" class="front face-front">
+        <div id="chart-container"></div>
+        <div id="Performance-figure">
+
+            <ul id="performance-figure-table">
+                <li>
+                    <span class="performance-figure-title">Sharpe Ratio</span>
+                    <span class="block group1">
+                        <span class="fund-name names">Perseus</span>
+                        <span class="portfolio-value value">0.98</span>
+                    </span>
+                    <span class="block group1">
+                        <span class="benchmark-name names">SP500</span>
+                        <span class="benchmark-value value">0.80</span>
+                    </span>
+                    <span class="block group1">
+                        <span class="benchmark-name names">EMBI</span>
+                        <span class="benchmark-value value">0.77</span>
+                    </span>
+                    
+
+                </li>
+
+                <li>
+                    <span class="performance-figure-title">Volatility</span>
+                    <span class="block group1">
+                        <span class="fund-name names">Perseus</span>
+                        <span class="portfolio-value value">0.98</span>
+                    </span>
+                    <span class="block group1">
+                        <span class="benchmark-name names">SP500</span>
+                        <span class="benchmark-value value">0.80</span>
+                    </span>
+                    <span class="block group1">
+                        <span class="benchmark-name names">EMBI</span>
+                        <span class="benchmark-value value">0.77</span>
+                    </span>
+                </li>
+                <li>
+                    <span class="performance-figure-title">Correlation</span>
+                    <span>Perseus</span>
+                    <span>0.98</span>
+                    <span>SP500</span><span>0.8</span>
+                    <span>EMBI</span> <span>0.77</span>
+                </li>
+            </ul>
+
+
+        </div>
+    </div>
+
+    <div id="portfolio-risk-exposure" class="back face-back" >
+        <div id="sunburst-container"></div>
+    </div>
+    </div>
+    <div id="bond-portfolio-description">
+    <div id="bond-portfolio-description-title" class="infor-box title">Bond Portfolio Description</div>
+        <table id="bond-portfolio-table">
+            <tbody>
+                <tr><td>Bond Portfolio</td><td></td> </tr>
+                <tr><td>Par Value</td><td>0.98</td> </tr>
+                <tr><td>Accrued Interest</td><td>0.8</td></tr>
+                <tr><td>Market Value</td><td>0.77</td></tr>
+                <tr><td>Estimated Annual Income</td><td>8%</td></tr>
+                <tr><td># of Position</td><td>20%</td></tr>
+                <tr><td>Average Coupon Rate</td><td>3%</td></tr>
+                <tr><td>Average Maturity</td><td></td></tr>
+                <tr><td>Average Duration</td><td>20%</td></tr>
+                <tr><td>Average Yield</td><td>3%</td></tr>
+                <tr><td>Average Rating</td><td>3%</td></tr>
+            </tbody>
+        </table>
+
+        <table id="top-winners-losers">
+            <tbody>
+                <tr><td>Top Winners</td><td></td> </tr>
+                <tr><td>Par Value</td><td>0.98</td> </tr>
+                <tr><td>Accrued Interest</td><td>0.8</td></tr>
+                <tr><td>Market Value</td><td>0.77</td></tr>
+                <tr><td>Estimated Annual Income</td><td>8%</td></tr>
+                <tr><td># of Position</td><td>20%</td></tr>
+                <tr><td>Losers</td><td></td> </tr>
+                <tr><td>Average Coupon Rate</td><td>3%</td></tr>
+                <tr><td>Average Maturity</td><td></td></tr>
+                <tr><td>Average Duration</td><td>20%</td></tr>
+                <tr><td>Average Yield</td><td>3%</td></tr>
+                <tr><td>Average Rating</td><td>3%</td></tr>
+            </tbody>
+        </table>
+    
+    </div>
+    <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('chart-container'));
+            var dates = ['04/30/2016', '5/31/2016', '6/30/2016', '7/31/2016', '8/31/2016', '9/30/2016', '10/31/2016', '11/30/2016', '12/31/2016', '1/31/2017', '2/28/2017', '3/31/2017', '4/30/2017', '5/31/2017', '6/30/2017', '7/31/2017', '8/31/2017', '9/30/2017', '10/31/2017', '11/30/2017', '12/31/2017', '1/31/2018', '2/28/2018', '3/31/2018', '4/30/2018', '5/31/2018']
+
+            var pgof_cum_return = [1, 1.0220, 1.0234, 1.0396, 1.0558, 1.1026, 1.0805, 1.1112, 1.1056, 1.1378, 1.1400, 1.1222, 1.1607, 1.1496, 1.1567, 1.1517, 1.1699, 1.1936, 1.2135, 1.2052, 1.2554, 1.2950, 1.2611, 1.2917, 1.2980, 1.2418]
+            var spx_cum_return = [1, 1.017957245, 1.020596045, 1.058223338, 1.059709965, 1.059908029, 1.040574776, 1.079112609, 1.10044168, 1.121312871, 1.165838158, 1.167196086, 1.179183802, 1.195777898, 1.203241666, 1.22798369, 1.231743878, 1.257151979, 1.286487316, 1.325943328, 1.340685608, 1.417444926, 1.365203873, 1.330508531, 1.335613813]
+            var embi_cum_return = [1, 0.995197558, 1.040616818, 1.049563833, 1.068049945, 1.072983961, 1.05143218, 1.00265779, 1.015920424, 1.030682999, 1.050721682, 1.054274173, 1.077036433, 1.083720379, 1.079588964, 1.084062471, 1.104864282, 1.103666961, 1.102206492, 1.093233162, 1.100127627, 1.094575214, 1.070194598, 1.077733774, 1.061194953]
+            var option = {
+                title: {
+                    text: 'Performance vs Benchmark'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['Perseus', 'SP500', 'EMBI']
+                },
+                xAxis: {
+                    data: dates,
+                    type: 'category',
+                },
+                yAxis: {
+                    min: 0.8,
+                },
+                series: [{
+                    name: 'Perseus',
+                    type: 'line',
+                    smooth: true,
+                    data: pgof_cum_return
+                },
+                {
+                    name: 'SP500',
+                    type: 'line',
+                    smooth: true,
+                    data: spx_cum_return
+                }, {
+                    name: 'EMBI',
+                    type: 'line',
+                    smooth: true,
+                    data: embi_cum_return
+                }]
+            };
+
+            myChart.setOption(option);
+
+            var sunburstChart = echarts.init(document.getElementById('sunburst-container'));           
+
+            var portfolioData = {{portfolioConstituteList|safe}}
+                   
+            var option2 = {
+                title: {
+                    text: 'Portfolio Constituent',
+                    textStyle: {
+                        fontSize: 14,
+                        align: 'center'
+                    },
+                },
+                series: {
+                    type: 'sunburst',
+                    highlightPolicy: 'ancestor',
+                    data: portfolioData,
+                    radius: [0, '95%'],
+                    sort: null,
+                    levels: [{}, {
+                        r0: '5%',
+                        r: '19%',
+                        itemStyle: {
+                            borderWidth: 2
+                        },
+                        label: {
+                            rotate: 'tangential'
+                        }
+                    }, {
+                        r0: '20%',
+                        r: '60%',
+                        label: {
+                          }
+                    }, {
+                        r0: '61%',
+                        r: '64%',
+                        label: {
+                            position: 'outside',
+                            padding: 1,
+                            silent: false
+                        },
+                        itemStyle: {
+                            borderWidth: 3
+                        }
+                    }]
+                }
+            };
+            sunburstChart.setOption(option2);
+            $("#portfolio-risk-exposure").css("transform", "RotateY(-180deg)")
+
+        </script>
+    <script type="text/javascript">
+        $("#rotate").click(function () {
+            $("#container").css("perspective","1000px")
+            if ($("#performance-vs-benchmark").hasClass("face-front")) {
+                $("#performance-vs-benchmark").css("transform", "RotateY(180deg)")
+                $("#portfolio-risk-exposure").css("transform", "RotateY(0deg)")
+                
+                $("#performance-vs-benchmark").removeClass("face-front")
+                $("#performance-vs-benchmark").addClass("face-back")
+                $("#portfolio-risk-exposure").removeClass("face-back")
+                $("#portfolio-risk-exposure").addClass("face-front")
+                
+            } else {
+                if ($("#performance-vs-benchmark").hasClass("face-back")) {
+                    $("#performance-vs-benchmark").css("transform", "RotateY(0deg)")
+                    $("#portfolio-risk-exposure").css("transform", "RotateY(-180deg)")
+                    $("#performance-vs-benchmark").removeClass("face-back")
+                    $("#performance-vs-benchmark").addClass("face-front")
+                    $("#portfolio-risk-exposure").removeClass("face-front")
+                    $("#portfolio-risk-exposure").addClass("face-back")
+
+                }
+            }
+           /* if ($("#performance-vs-benchmark").hasClass("back")) {
+
+            }
+            */
+            /*
+            $("#performance-vs-benchmark").css("transform", "rotateY(180deg)")
+            $("#performance-vs-benchmark").css("visibility", "hidden")
+            $("#performance-vs-benchmark").css("backface-visibility", "hidden")
+            $("#performance-vs-benchmark").css("transition", "all 0.36s ease-out")
+            */
+        })
+    </script>
+
+    <script type="text/javascript">
+        $(".group1").mouseover(function () {
+            $(".names").show()
+            $(".benchmark-value").show()
+        })
+        $(".group1").mouseleave(function () {
+            $(".names").hide();
+            $(".benchmark-value").hide()
+        })
+    </script>
+</body>
+
+</html>

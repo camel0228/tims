@@ -1,0 +1,296 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+
+<script type="text/javascript">  
+	function lookup()
+	{
+		var i = document.getElementById("isin").value;
+		var date = document.getElementById("myDate").value;
+		var time = document.getElementById("myTime").value;
+		window.location.replace("/tb2?isin=" + i + "&date=" + date + "&time=" + time);
+	}
+	$("#secondary-navigation").hide()
+	$("#navigation-container").css("margin-bottom","0px")
+</SCRIPT> 
+
+<style>
+	body {
+            font: 13px Helvetica;
+        }
+    h4 {
+            font-weight: bold;
+        }
+    table{
+            border-collapse: collapse;
+            border: none;
+    }
+    select{
+            background-color:white;
+            color:black;
+            margin: 0 5px;
+            width:250px;
+    }
+    input{
+    	width:250px;
+    }
+</style>
+
+<form action="/tbSubmit" method="post" name="tradeBlotter">
+	{{ form.hidden_tag() }}
+    <table>
+	    <tr>
+	    	<td width="15%">Trade Date</td>
+	    	<td width="85%">
+		    	<input name="tradeDate" id="myDate" type="date">
+		    		<SCRIPT LANGUAGE="JavaScript"> 
+						var now = new Date(); 
+						var month = now.getMonth() + 1;
+						var day = now.getDate();
+						if(month < 10) month = "0" + month;
+						if(day < 10) day = "0" + day;
+						myDate.value = (now.getYear() + 1900) + "-" + month + "-" + day; 
+					</SCRIPT> 
+		    	</input>
+		    	{% for error in form.tradeDate.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Time</td>
+	    	<td>
+		    	<input name="time" id="myTime" type="time">
+		    		<SCRIPT LANGUAGE="JavaScript"> 
+						var now = new Date(); 
+						var h = now.getHours();
+						var m = now.getMinutes();
+						if(h<10) h = "0" + h;
+						if(m<10) m = "0" + m;
+						myTime.value = h + ":" + m; 
+					</SCRIPT> 
+		    	</input>
+		    	{% for error in form.time.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>ISIN</td>
+	    	<td>
+	    		{% if isin %}
+		    		<input name="isin" id="isin" value="{{isin}}" type="text" />&nbsp;&nbsp;
+		    	{% else %}
+		    		<input name="isin" id="isin" type="text" />&nbsp;&nbsp;
+		    	{% endif %}
+		    	<input type="button" name="LOOKUP" value="Search" style="width:100px" onclick="lookup()" />
+		    	{% for error in form.isin.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Security Name</td>
+	    	<td>
+	    		{% if name %}
+	    			<input name="securityName" value="{{name}}" type="text">
+	    		{% else %}
+		    		{{ form.securityName }}
+		    	{% endif %}
+		    	{% for error in form.securityName.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Transaction</td>
+	    	<td>
+	    		<select id="bs" name="bs">
+	    			<option value =""></option>
+  					<option value ="B">BUY</option>
+  					<option value ="S">SELL</option>
+  					<option value ="SS">SHORT SELL</option>
+  					<option value ="BTC">BUY TO COVER</option>
+				</select>
+	    		<!--
+		    	<label><input name="bs" type="checkbox" value="B" />BUY</label>&nbsp;&nbsp;&nbsp;   
+	    		<label><input name="bs" type="checkbox" value="S" />SELL</label>&nbsp;&nbsp;&nbsp;   
+	    		<label><input name="bs" type="checkbox" value="SS" />SHORT SELL</label>&nbsp;&nbsp;&nbsp;   
+	    		<label><input name="bs" type="checkbox" value="BTC" />BUY TO COVER</label>
+	    		-->
+		    	{% for error in form.bs.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Quantity</td>
+	    	<td>
+		    	{{ form.quantity }}
+		    	{% for error in form.quantity.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Price</td>
+	    	<td>
+		    	{{ form.price }}
+		    	{% for error in form.price.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Currency</td>
+	    	<td>
+		    	{% if currType %}
+	    			<input name="currency" value="{{currType}}" type="text" />
+	    		{% else %}
+	    			<select id="currency" name="currency">
+	    				<option value =""></option>
+	  					<option value ="USD" selected>USD</option>
+	  					<option value ="EUR">EUR</option>
+	  					<option value ="GBP">GBP</option> 
+	  					<option value ="JPY">JPY</option>
+	  					<option value ="AED">AED</option>
+	  					<option value ="ARS">ARS</option>
+	  					<option value ="ARZ">ARZ</option>
+	  					<option value ="ATS">ATS</option>
+	  					<option value ="AUD">AUD</option>
+	  					<option value ="BHD">BHD</option>
+	  					<option value ="BMD">BMD</option>
+	  					<option value ="BRL">BRL</option>
+	  					<option value ="CAD">CAD</option>
+	  					<option value ="CHF">CHF</option>
+	  					<option value ="CLP">CLP</option>
+	  					<option value ="CNY">CNY</option>
+	  					<option value ="COP">COP</option>
+	  					<option value ="DEM">DEM</option>
+	  					<option value ="DKK">DKK</option>
+	  					<option value ="FRF">FRF</option>
+	  					<option value ="HKD">HKD</option>
+	  					<option value ="IDR">IDR</option>
+	  					<option value ="ILS">ILS</option>
+	  					<option value ="INR">INR</option>
+	  					<option value ="ISK">ISK</option>
+	  					<option value ="ITL">ITL</option>
+	  					<option value ="JMD">JMD</option>
+	  					<option value ="KWD">KWD</option>
+	  					<option value ="KYD">KYD</option>
+	  					<option value ="KZT">KZT</option>
+	  					<option value ="LBP">LBP</option>
+	  					<option value ="MUR">MUR</option>
+	  					<option value ="MXN">MXN</option>
+	  					<option value ="NOK">NOK</option>
+	  					<option value ="PHP">PHP</option>
+	  					<option value ="RUB">RUB</option>
+	  					<option value ="SAR">SAR</option>
+	  					<option value ="SEK">SEK</option>
+	  					<option value ="SGD">SGD</option>
+	  					<option value ="UAH">UAH</option>
+	  					<option value ="UYP">UYP</option>
+	  					<option value ="VEB">VEB</option>
+	  					<option value ="VEF">VEF</option>
+	  					<option value ="VND">VND</option>
+	  					<option value ="ZAR">ZAR</option>
+					</select>
+		    	{% endif %}
+		    	{% for error in form.currency.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Trader</td>
+	    	<td>
+	    		<select id="trader" name="trader">
+  					<option value ="SS">SHAHRIAR</option>
+  					<option value ="VG">VARUN</option>
+  					<option value ="GN" selected>GEORGE</option>
+				</select>
+	    		<!--
+	    		<label><input name="trader" type="checkbox" value="SS" />SHAHRIAR</label>&nbsp;&nbsp; 
+	    		<label><input name="trader" type="checkbox" value="VG" />VARUN</label>&nbsp;&nbsp; 
+	    		<label><input name="trader" type="checkbox" value="GN" checked="checked"/>GEORGE</label>
+	    		-->
+		    	{% for error in form.trader.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Allocation</td>
+	    	<!--<td>
+		    	{{ form.accounts }}
+		    	{% for error in form.accounts.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>-->
+        	<td>
+        		<table border="1">
+        			<tr>
+        				<td style="width:6%">AGCF</td>
+        				<td width="6%"><input name="AGCF" type="text" value="0" style="width:95px;"/></td>
+        				<td width="6%">ACPT</td>
+        				<td width="6%"><input name="ACPT" type="text" value="0" style="width:95px;"/></td>
+        				<td width="6%">INC0</td>
+        				<td width="70%"><input name="INC0" type="text" value="0" style="width:95px;"/></td>
+        			</tr>
+        			<tr>
+        				<td style="width:6%">INC5</td>
+        				<td width="6%"><input name="INC5" type="text" value="0" style="width:95px;"/></td>
+        				<td width="6%">PGOF</td>
+        				<td width="6%"><input name="PGOF" type="text" value="0" style="width:95px;"/></td>
+        				<td width="6%">HART</td>
+        				<td width="70%"><input name="HART" type="text" value="0" style="width:95px;"/></td>
+        			</tr>
+        		</table>
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Counter Party</td>
+	    	<td>
+		    	{{ form.counterparty }}
+		    	{% for error in form.counterparty.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Sales Trader</td>
+	    	<td>
+		    	{{ form.salesTrader }}
+		    	{% for error in form.salesTrader.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Book</td>
+	    	<td>
+	    		<select id="book" name="book">
+  					<option value ="main" selected>MAIN</option>
+  					<option value ="ss">SS</option>
+  					<option value ="vg">VG</option>
+  					<option value ="GN">GN</option>
+				</select>
+		    	{% for error in form.book.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	    <tr>
+	    	<td>Remark</td>
+	    	<td>
+		    	{{ form.remark }}
+		    	{% for error in form.remark.errors %}
+	          		<span style="color: red;">[{{error}}]</span>
+	        	{% endfor %}
+        	</td>
+	    </tr>
+	</table>
+	<p><input type="submit" style="width:100px" value="Submit"></p>
+</form>
+{% endblock %}
