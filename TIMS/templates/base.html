@@ -288,13 +288,6 @@
                         </div>
                         <button id="toggleSearch" class="search-icon" type="submit" onclick="fuzzyQuery()"></button>
                     </li>
-                    <li id="logout" class="utility-nav-dropdown">
-                        <h2>
-                        {% if g.user.is_authenticated() %}
-        					<a href="{{ url_for('logout') }}">Logout</a>
-        				{% endif %}
-        				</h2>
-                    </li>
                 </ol>
             </div>
             <div id="last_update">{{lastUptDt}}</div>

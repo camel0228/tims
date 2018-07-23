@@ -15,13 +15,13 @@ import json
 
 app = Flask(__name__)
 app.config.from_object('config')
-client = Client(('54.157.14.150', 11211))
-#client = Client(('127.0.0.1', 11211))
-dbAlchemy = SQLAlchemy(app)
-lm = LoginManager()
-lm.init_app(app)
-lm.login_view = 'login'
-oid = OpenID(app, os.path.join(basedir, 'tmp'))
+# client = Client(('54.157.14.150', 11211))
+client = Client(('127.0.0.1', 11211))
+# dbAlchemy = SQLAlchemy(app)
+# lm = LoginManager()
+# lm.init_app(app)
+# lm.login_view = 'login'
+# oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level = logging.INFO)
@@ -31,14 +31,14 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-@lm.user_loader
-def load_user(id):
-    from models import User, ROLE_USER, ROLE_ADMIN
-    return User.query.get(int(id))
+# @lm.user_loader
+# def load_user(id):
+#     from models import User, ROLE_USER, ROLE_ADMIN
+#     return User.query.get(int(id))
 
 @app.before_request
 def before_request():
-    g.user = current_user
+#     g.user = current_user
     g.service = serviceImpl.Service()
     g.dataBase = db.DbConn()
     g.random = 0
@@ -54,7 +54,7 @@ def before_request():
     g.cashComponent = g.service.getAvailCashFromReport()['Perseus']
     
 @app.route('/index')
-@login_required
+# @login_required
 def main():
     try:
         g.service.fxRate()
@@ -85,7 +85,7 @@ def main():
     return redirect(url_for('test'))
 
 @app.route('/test')
-@login_required
+# @login_required
 def test():
     account = 'PGOF'
     countryLabelsList = list()
@@ -162,7 +162,7 @@ def test():
     return redirect(url_for('openPosition'))
 
 @app.route('/op', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def openPosition():
     account = request.args.get('account')
     group = request.args.get('group')
@@ -195,13 +195,13 @@ def openPosition():
                            dailyPNL = client.get('dailyPNL'), gainLossYTD = client.get('gainLossYTD'))
 
 @app.route('/riskManagement', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def riskManagement():
     portfolioConstituteList = g.service.portfolioConstitute('PGOF')
     return render_template("riskManagement.html", title = 'Risk Management', portfolioConstituteList = portfolioConstituteList) 
 
 @app.route('/transView', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def transView():
     form = FlaskForm()
     account = request.args.get('account')
@@ -233,7 +233,7 @@ def transView():
                            endDate = endDate, lastUptDt = g.lastUptDt) 
 
 @app.route('/transSearch', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def transSearch():
     form = FlaskForm()
     startDate = request.args.get('startDate')
@@ -253,7 +253,7 @@ def transSearch():
     return render_template("TransactionsView.html", title = 'Transactions', name = listResult, startDate = startDate, endDate = endDate)  
 
 @app.route('/gl', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def realizedGL():
     form = FlaskForm()
     account = request.args.get('account')
@@ -271,7 +271,7 @@ def realizedGL():
                            lastUptDt = g.lastUptDt, year = year, month = month, unGL = unGL)
 
 @app.route('/sh', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def shareholdersView():
     form = FlaskForm()
     account = request.args.get('account')
@@ -318,7 +318,7 @@ def shareholdersView():
                            valueList = valueList, colorList = colorList, categoryList = categoryList) 
 
 @app.route('/sh2', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def shareholdersDetails():
     form = FlaskForm()
     account = request.args.get('account')
@@ -334,46 +334,46 @@ def shareholdersDetails():
     return render_template("InvestorDetails.html", title = 'Shareholders', account = account, investHistory = investHistory, \
                            investor = investor)
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
-def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('openPosition'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-    return render_template('login.html', title='Sign In', form=form, providers=app.config['OPENID_PROVIDERS'])
+# @app.route('/', methods=['GET', 'POST'])
+# @app.route('/login', methods=['GET', 'POST'])
+# @oid.loginhandler
+# def login():
+#     if g.user is not None and g.user.is_authenticated():
+#         return redirect(url_for('openPosition'))
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         session['remember_me'] = form.remember_me.data
+#         return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+#     return render_template('login.html', title='Sign In', form=form, providers=app.config['OPENID_PROVIDERS'])
 
-@oid.after_login
-def after_login(resp):
-    from models import User, ROLE_USER, ROLE_ADMIN
-    if resp.email is None or resp.email == "":
-        flash('Invalid login. Please try again.')
-        return redirect(url_for('login'))
-    user = User.query.filter_by(email=resp.email).first()
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        user = User(nickname=nickname, email=resp.email)
-        dbAlchemy.session.add(user)
-        dbAlchemy.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember = remember_me)
-    return redirect(url_for('openPosition'))
+# @oid.after_login
+# def after_login(resp):
+#     from models import User, ROLE_USER, ROLE_ADMIN
+#     if resp.email is None or resp.email == "":
+#         flash('Invalid login. Please try again.')
+#         return redirect(url_for('login'))
+#     user = User.query.filter_by(email=resp.email).first()
+#     if user is None:
+#         nickname = resp.nickname
+#         if nickname is None or nickname == "":
+#             nickname = resp.email.split('@')[0]
+#         user = User(nickname=nickname, email=resp.email)
+#         dbAlchemy.session.add(user)
+#         dbAlchemy.session.commit()
+#     remember_me = False
+#     if 'remember_me' in session:
+#         remember_me = session['remember_me']
+#         session.pop('remember_me', None)
+#     login_user(user, remember = remember_me)
+#     return redirect(url_for('openPosition'))
 
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+# @app.route('/logout')
+# def logout():
+#     logout_user()
+#     return redirect(url_for('login'))
 
 @app.route('/tb', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def tb():
     form = TradeBlotterForm()
     return render_template("TradeBlotter.html", title = 'Trader Blotter', form = form)
@@ -402,7 +402,7 @@ def tb2():
             return render_template("TradeBlotter2.html", title = 'Trader Blotter', form = form, name = sName, isin = tb.isin, myDate = tb.tradeDate, myTime = tb.time, currType = currType)
 
 @app.route('/tbView', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def tbView():
     form = FlaskForm()
     startDate = request.args.get('startDate')
@@ -424,7 +424,7 @@ def tbView():
     return render_template("TradeBlotterView.html", title = 'Trade Blotter', name = listResult, startDate = startDate, endDate = endDate)
 
 @app.route('/tbSubmit', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def tbSubmit():
     form = TradeBlotterForm()
     tb = db.tradeBlotter.TradeBlotter()
@@ -464,7 +464,7 @@ def tbSubmit():
     return render_template('TradeBlotter.html', title='ADD', form=form)
 
 @app.route('/tbManage', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def tbManage():
     form = FlaskForm()
     listResult = g.dataBase.qTradeBlotterByStatus("Applied")
@@ -475,11 +475,11 @@ def tbManage():
     except PageNotAnInteger:
         result = p.page(1)
     except EmptyPage:
-        result = p.page(p.num_pages)
+        result = p.page(p.num_pages) 
     return render_template("TradeBlotterManage.html", title = 'Trade Blotter', name = result)
 
 @app.route('/tbConfirm', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def tbConfirm():
     tb = db.tradeBlotter.TradeBlotter()
     tb.id = request.args.get('id')

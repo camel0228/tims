@@ -1,8 +1,8 @@
 import os, urllib
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLALCHEMY_DATABASE_URI = 'mssql+pymssql://sa:Heron7056@127.0.0.1:1433/Test'
-# SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://sa:Heron7056@127.0.0.1:1433/Test?driver=ODBC+Driver+13+for+SQL+Server'
+# SQLALCHEMY_DATABASE_URI = 'mssql+pymssql://sa:Heron7056@127.0.0.1:1433/Test'
+SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://sa:Heron7056@127.0.0.1:1433/Test?driver=ODBC+Driver+13+for+SQL+Server'
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
