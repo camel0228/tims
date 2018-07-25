@@ -1,7 +1,7 @@
 import pymssql, pyodbc, datetime
 from model import trade,security,fund,currency,counterparty,config,frontQuery,tradeBlotter, \
     report,priceHistory,openPosition,frontSummary,tradeClose,realizedGL,accountHistory, \
-    investHistory, frontInvestPNL, riskManagement, message
+    investHistory, frontInvestPNL, riskManagement, message, incomeAttribution
 
 class DbConn:
     def __init__(self):
@@ -194,50 +194,50 @@ class DbConn:
         self.__cur.execute(sql, tradeDate)
         for i in self.__cur.fetchall():
             result = trade.Trade()
-            result.seqNo = i[0]
-            result.tranType = i[1]
-            result.CUSIP = i[2]
-            result.ISIN = i[3]
-            result.securityName = i[4]
-            result.brokerName = i[5]
-            result.fundName = i[6]
-            result.customerName = i[7]
-            result.traderName = i[8]
-            result.side = i[9]
-            result.currType = i[10]
-            result.price = i[11]
-            result.y = i[12]
-            result.quantity = i[13]
-            result.principal = i[14]
-            result.coupon = i[15]
-            result.accruedInt = i[16]
-            result.repoRate = i[17]
-            result.factor = i[18]
-            result.net = i[19]
-            result.principalInUSD = i[20]
-            result.commission = i[21]
-            result.tax = i[22]
-            result.fee = i[23]
-            result.charge = i[24]
-            result.settleLocation = i[25]
-            result.tradeDate = i[26]
-            result.issueDate = i[27]
-            result.settleDate = i[28]
-            result.matureDate = i[29]
-            result.dlrAlias = i[30]
-            result.remarks = i[31]
-            result.status = i[32]
-            result.settled = i[33]
-            result.custody = i[34]
-            result.fxAccount1 = i[35]
-            result.fxAccount2 = i[36]
-            result.fxCurrType1 = i[37]
-            result.fxCurrType2 = i[38]
-            result.reserve1 = i[39]
-            result.reserve2 = i[40]
-            result.reserve3 = i[41]
-            result.reserve4 = i[42]
-            result.source = i[43]
+            result.seqNo = str(i[0])
+            result.tranType = str(i[1])
+            result.CUSIP = str(i[2])
+            result.ISIN = str(i[3])
+            result.securityName = str(i[4])
+            result.brokerName = str(i[5])
+            result.fundName = str(i[6])
+            result.customerName = str(i[7])
+            result.traderName = str(i[8])
+            result.side = str(i[9])
+            result.currType = str(i[10])
+            result.price = float(i[11])
+            result.y = float(i[12])
+            result.quantity = float(i[13]) if result.side == 'B' else float(i[13] * (-1))
+            result.principal = float(i[14])
+            result.coupon = float(i[15])
+            result.accruedInt = float(i[16])
+            result.repoRate = float(i[17])
+            result.factor = float(i[18])
+            result.net = float(i[19])
+            result.principalInUSD = float(i[20])
+            result.commission = float(i[21])
+            result.tax = float(i[22])
+            result.fee = float(i[23])
+            result.charge = float(i[24])
+            result.settleLocation = str(i[25])
+            result.tradeDate = str(i[26])
+            result.issueDate = str(i[27])
+            result.settleDate = str(i[28])
+            result.matureDate = str(i[29])
+            result.dlrAlias = str(i[30])
+            result.remarks = str(i[31])
+            result.status = str(i[32])
+            result.settled = str(i[33])
+            result.custody = str(i[34])
+            result.fxAccount1 = str(i[35])
+            result.fxAccount2 = str(i[36])
+            result.fxCurrType1 = str(i[37])
+            result.fxCurrType2 = str(i[38])
+            result.reserve1 = float(i[39])
+            result.reserve2 = float(i[40])
+            result.reserve3 = str(i[41])
+            result.reserve4 = str(i[42])
+            result.source = str(i[43])
             listResult.append(result)
         return listResult
     
@@ -306,56 +306,50 @@ class DbConn:
         self.__cur.execute(sql, fundName, startDate, endDate)
         for i in self.__cur.fetchall():
             result = trade.Trade()
-            result.seqNo = i[0]
-            result.tranType = i[1]
-            result.CUSIP = i[2]
-            result.ISIN = i[3]
-            result.securityName = i[4]
-            result.brokerName = i[5]
-            result.fundName = i[6]
-            result.customerName = i[7]
-            result.traderName = i[8]
-            result.side = i[9]
-            result.currType = i[10]
-            result.price = round(i[11], 2)
-            result.y = i[12]
-            result.quantity = format(int(i[13]), ',')
-            result.principal = i[14]
-            result.coupon = i[15]
-            result.accruedInt = i[16]
-            result.repoRate = i[17]
-            result.factor = i[18]
-            result.net = format(round(i[19], 2), ',')
-            result.principalInUSD = i[20]
-            result.commission = i[21]
-            result.tax = i[22]
-            result.fee = i[23]
-            result.charge = i[24]
-            result.settleLocation = i[25]
-            
-            tempDate = datetime.datetime.strptime(str(i[26]), '%Y-%m-%d')
-            year = str(tempDate.year)
-            month = str(tempDate.month)
-            day = str(tempDate.day)
-            result.tradeDate = month + '/' + day + '/' + year
-            
-            result.issueDate = i[27]
-            result.settleDate = i[28]
-            result.matureDate = i[29]
-            result.dlrAlias = i[30]
-            result.remarks = i[31]
-            result.status = i[32]
-            result.settled = i[33]
-            result.custody = i[34]
-            result.fxAccount1 = i[35]
-            result.fxAccount2 = i[36]
-            result.fxCurrType1 = i[37]
-            result.fxCurrType2 = i[38]
-            result.reserve1 = i[39]
-            result.reserve2 = i[40]
-            result.reserve3 = i[41]
-            result.reserve4 = i[42]
-            result.source = i[43]
+            result.seqNo = str(i[0])
+            result.tranType = str(i[1])
+            result.CUSIP = str(i[2])
+            result.ISIN = str(i[3])
+            result.securityName = str(i[4])
+            result.brokerName = str(i[5])
+            result.fundName = str(i[6])
+            result.customerName = str(i[7])
+            result.traderName = str(i[8])
+            result.side = str(i[9])
+            result.currType = str(i[10])
+            result.price = float(i[11])
+            result.y = float(i[12])
+            result.quantity = float(i[13]) if result.side == 'B' else float(i[13] * (-1))
+            result.principal = float(i[14])
+            result.coupon = float(i[15])
+            result.accruedInt = float(i[16])
+            result.repoRate = float(i[17])
+            result.factor = float(i[18])
+            result.net = float(i[19])
+            result.principalInUSD = float(i[20])
+            result.commission = float(i[21])
+            result.tax = float(i[22])
+            result.fee = float(i[23])
+            result.charge = float(i[24])
+            result.settleLocation = str(i[25])
+            result.tradeDate = str(i[26])
+            result.issueDate = str(i[27])
+            result.settleDate = str(i[28])
+            result.matureDate = str(i[29])
+            result.dlrAlias = str(i[30])
+            result.remarks = str(i[31])
+            result.status = str(i[32])
+            result.settled = str(i[33])
+            result.custody = str(i[34])
+            result.fxAccount1 = str(i[35])
+            result.fxAccount2 = str(i[36])
+            result.fxCurrType1 = str(i[37])
+            result.fxCurrType2 = str(i[38])
+            result.reserve1 = float(i[39])
+            result.reserve2 = float(i[40])
+            result.reserve3 = str(i[41])
+            result.reserve4 = str(i[42])
+            result.source = str(i[43])
             listResult.append(result)
         return listResult
     
@@ -1669,15 +1663,15 @@ class DbConn:
     
     def qPriceHistoryAtPriceDate(self, ISIN, priceDate):
         listResult = list()
-        sql = "select * from dbo.pricehistory where ISIN = ? and priceDate = ? order by priceDate desc"
+        sql = "select * from dbo.pricehistory where ISIN = ? and priceDate = ? order by lastUptDt desc"
         self.__cur.execute(sql, ISIN, priceDate)
         for i in self.__cur.fetchall():
             result = priceHistory.PriceHistory()
-            result.price = i[0]
-            result.ai = i[1]
-            result.priceDate = i[2]
-            result.lastUptDt = i[3]
-            result.ISIN = i[4]
+            result.price = float(i[0])
+            result.ai = float(i[1])
+            result.priceDate = str(i[2])
+            result.lastUptDt = str(i[3])
+            result.ISIN = str(i[4])
             listResult.append(result)
         return listResult
     
@@ -1949,9 +1943,9 @@ class DbConn:
         self.__cur.execute(sql, currType, tradeDate)
         for i in self.__cur.fetchall():
             result = currency.Currency()
-            result.currType = i[0]
-            result.rate = i[1]
-            result.lastUpdDt = i[2]
+            result.currType = str(i[0])
+            result.rate = float(i[1])
+            result.lastUpdDt = str(i[2])
             result.reserve1 = i[3]
             result.reserve2 = i[4]
             result.reserve3 = i[5]

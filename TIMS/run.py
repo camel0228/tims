@@ -124,6 +124,7 @@ def test():
     returnList.append(round(accReturn * 100, 2))
     monthlyReturn.append(round(currReturn * 100, 2))
     client.set('unrealized_GL_YTD', int(accountValueYearStart * accReturn - g.longTermGL - g.shortTermGL))
+    g.service.updatePnlFromReport(summary.accountValue)
     pnlFromReport = g.dataBase.qReport()[0]
     
     summary.dailyPNL = format(int(pnlFromReport.currAccValue) - int(pnlFromReport.yesAccValue), ',')
@@ -136,7 +137,7 @@ def test():
     summary.gainLoss = format(int(summary.gainLoss), ',')
     summary.gainLossSumYTD = (format(int(accountValueYearStart * accReturn), ',') + "  /  {}%").format(str(round(accReturn * 100, 2)))
     
-    g.service.updatePnlFromReport(summary.accountValue)
+    
     
     client.set('positionListAll', positionListAll)
     client.set('positionListCategory', positionListCategory)

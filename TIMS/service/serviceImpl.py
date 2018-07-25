@@ -2572,40 +2572,117 @@ class Service:
                 g.dataBase.iReport(report)
         g.dataBase.commitment()
     
-    def incomeAttribution(self, startDate, endDate):
-        tradeHistoryList1 = g.dataBase.qTradeHistoryBeforeDate(startDate)
-        tradeHistoryList2 = g.dataBase.qTradeHistoryBeforeDate(endDate)
-        tradeHistoryDict1 = {}
-        tradeHistoryDict2 = {}
-        tradeDiffDict = {}
-        self.setTradeHistoryDict(tradeHistoryList1, tradeHistoryDict1)
-        self.setTradeHistoryDict(tradeHistoryList2, tradeHistoryDict2)
-        self.combineTradeHistoryDict(tradeDiffDict, tradeHistoryDict1, tradeHistoryDict2)
-    
-    def setTradeHistoryDict(self, tradeHistoryList, tradeHistoryDict):
-        for i in tradeHistoryList:
+    def incomeAttribution(self, fundName, startDate, endDate):
+        
+        tradeHistoryDict = {}
+        incomeAttrDict = {}
+        tradeHistoryNew = g.dataBase.qTradeHistoryByDateRange(fundName, endDate, endDate)
+        tradeHistoryLast = g.dataBase.qTradeHistoryBeforeDate(startDate)
+        
+        for i in tradeHistoryLast:
             if i.tranType != 'REPO' and i.tranType != 'CREPO':
                 if i.ISIN not in tradeHistoryDict:
-                    if i.side == "B":
-                        tradeHistoryDict[str(i.ISIN)] = float(i.quantity)
-                    else:
-                        tradeHistoryDict[str(i.ISIN)] = 0 - float(i.quantity)
-                else:
-                    if i.side == 'B':
-                        tradeHistoryDict[str(i.ISIN)] += float(i.quantity)
-                    else:
-                        tradeHistoryDict[str(i.ISIN)] -= float(i.quantity)
-        for key, value in tradeHistoryDict.items():
-            if value == 0:
-                tradeHistoryDict.pop(key)
-    
-    def combineTradeHistoryDict(self, tradeDiffDict, tradeHistoryDict1, tradeHistoryDict2):
-        for key, value in tradeHistoryDict1.items():
-            if key in tradeHistoryDict2:
-                tradeDiffDict[key] = tradeHistoryDict2[key] - value
+                    tradeHistoryDict[i.ISIN] = i
+                else: 
+                    tempQuantity = tradeHistoryDict[i.ISIN].quantity + i.quantity
+                    tradeHistoryDict[i.ISIN] = i
+                    tradeHistoryDict[i.ISIN].quantity = tempQuantity
+        
+        for ISIN, tradeHistory in tradeHistoryDict.items():
+            if tradeHistory.quantity == 0:
+                pass
             else:
-                tradeDiffDict[key] = 0 - value
-        for key, value in tradeHistoryDict2.items():
-            if key not in tradeHistoryDict1:
-                tradeDiffDict[key] = value
+                currPriceHistory = g.dataBase.qPriceHistoryAtPriceDate(ISIN, endDate)[0]
+                try:
+                    lastPriceHistory = g.dataBase.qPriceHistoryAtPriceDate(ISIN, startDate)[0]
+                except:
+                    lastPriceHistory = currPriceHistory
+                currFxHistory = g.dataBase.qCurrencyByDate(tradeHistory.currType, endDate)[0]
+                lastFxHistory = g.dataBase.qCurrencyByDate(tradeHistory.currType, startDate)[0]
+                incomeAttr = db.incomeAttribution.IncomeAttribution()
+                incomeAttr.securityName = tradeHistory.securityName
+                incomeAttr.securityType = tradeHistory.tranType
+                incomeAttr.ISIN = ISIN
+                incomeAttr.coupon = tradeHistory.coupon
+                incomeAttr.matureDate = tradeHistory.matureDate
+                incomeAttr.quantity = tradeHistory.quantity
+                incomeAttr.deltaPrice = (currPriceHistory.price - lastPriceHistory.price) * tradeHistory.quantity \
+                                        * lastFxHistory.rate * tradeHistory.factor 
+                incomeAttr.deltaFX = (currFxHistory.rate - lastFxHistory.rate) * lastPriceHistory.price * tradeHistory.quantity \
+                                        * tradeHistory.factor 
+                incomeAttr.accruedInterest = tradeHistory.quantity * tradeHistory.coupon * tradeHistory.factor * fxRate / 36000
+                unrealizedGL = tradeHistory.quantity * tradeHistory.factor * \
+                                (currPriceHistory.price * currFxHistory.rate - lastPriceHistory.price * lastFxHistory.rate)
+                incomeAttr.total = unrealizedGL + incomeAttr.accruedInterest
+                incomeAttr.priceFxInteract = incomeAttr.total - incomeAttr.deltaPrice - incomeAttr.deltaFX - incomeAttr.accruedInterest
+                incomeAttrDict[tradeHistory.ISIN] = incomeAttr
+        
+        for i in tradeHistoryNew:
+            incomeAttr = db.incomeAttribution.IncomeAttribution()
+            incomeAttr.securityName = i.securityName
+            incomeAttr.securityType = i.tranType
+            incomeAttr.ISIN = i.ISIN
+            incomeAttr.coupon = i.coupon
+            incomeAttr.matureDate = i.matureDate
+            realizedGL = 0
+            unrealizedGL = 0
+            currPriceHistory = g.dataBase.qPriceHistoryAtPriceDate(i.ISIN, endDate)[0]
+            try:
+                lastPriceHistory = g.dataBase.qPriceHistoryAtPriceDate(i.ISIN, startDate)[0]
+            except:
+                lastPriceHistory = currPriceHistory
+            currFxHistory = g.dataBase.qCurrencyByDate(i.currType, endDate)[0]
+            lastFxHistory = g.dataBase.qCurrencyByDate(i.currType, startDate)[0]
+            
+            if i.ISIN not in incomeAttrDict:
+                incomeAttr.quantity = i.quantity
+                incomeAttr.deltaPrice = (currPriceHistory.price - i.price) * i.quantity * currFxHistory.rate * i.factor 
+                incomeAttr.deltaFX = 0
+                realizedGL = 0
+                unrealizedGL = i.quantity * i.factor * (currPriceHistory.price - i.price) * currFxHistory.rate
+                incomeAttr.accruedInterest = 0
+                incomeAttr.total = realizedGL + unrealizedGL + incomeAttr.accruedInterest 
+                      
+            else:
+                if incomeAttrDict[i.ISIN].quantity * i.quantity < 0 and abs(incomeAttrDict[i.ISIN].quantity) >= abs(i.quantity):
+                    realizedGL = (-1) * i.quantity * i.factor * \
+                            (i.price * currFxHistory.rate - lastPriceHistory.price * lastFxHistory.rate)
+                    unrealizedGL = (incomeAttrDict[i.ISIN].quantity + i.quantity) * i.factor * \
+                            (currPriceHistory.price * currFxHistory.rate - lastPriceHistory.price * lastFxHistory.rate)
+                    incomeAttr.deltaPrice = (incomeAttrDict[i.ISIN].quantity + i.quantity) \
+                                        * (currPriceHistory.price - lastPriceHistory.price) * lastFxHistory.rate * i.factor \
+                                        + (-1) * i.quantity * (i.price - lastPriceHistory.price) * lastFxHistory.rate * i.factor   
+                
+                elif incomeAttrDict[i.ISIN].quantity * i.quantity < 0 and abs(incomeAttrDict[i.ISIN].quantity) < abs(i.quantity):
+                    realizedGL = incomeAttrDict[i.ISIN].quantity * i.factor * \
+                            (i.price * currFxHistory.rate - lastPriceHistory.price * lastFxHistory.rate)
+                    unrealizedGL = (incomeAttrDict[i.ISIN].quantity + i.quantity) * i.factor * \
+                            (currPriceHistory.price * currFxHistory.rate - i.price * currFxHistory.rate)
+                    incomeAttr.deltaPrice = (incomeAttrDict[i.ISIN].quantity + i.quantity) \
+                                        * (currPriceHistory.price - i.price) * currFxHistory.rate * i.factor \
+                                        + incomeAttrDict[i.ISIN].quantity * (i.price - lastPriceHistory.price) \
+                                        * lastFxHistory.rate * i.factor   
+                
+                else:
+                    realizedGL = 0
+                    incomeAttr.deltaPrice = i.quantity * (currPriceHistory.price - i.price) * currFxHistory.rate * i.factor \
+                                          + incomeAttrDict[i.ISIN].quantity * (currPriceHistory.price - lastPriceHistory.price)\
+                                          * lastFxHistory.rate * i.factor 
+                
+                incomeAttr.deltaFX = incomeAttrDict[i.ISIN].quantity \
+                                        * (currFxHistory.rate - lastFxHistory.rate) * lastPriceHistory.price * i.factor 
+                unrealizedGL = incomeAttrDict[i.ISIN].quantity * i.factor * \
+                            (currPriceHistory.price * currFxHistory.rate - lastPriceHistory.price * lastFxHistory.rate) + \
+                            i.quantity * (currPriceHistory.price - i.price) * currFxHistory.rate
+                incomeAttr.accruedInterest = incomeAttrDict[i.ISIN].quantity * i.factor * i.coupon * currFxHistory.rate / 36000
+                incomeAttr.total = realizedGL + unrealizedGL + incomeAttr.accruedInterest
+                incomeAttr.quantity = incomeAttrDict[i.ISIN].quantity + i.quantity
+            
+            incomeAttr.priceFxInteract = incomeAttr.total - incomeAttr.deltaPrice - incomeAttr.deltaFX - incomeAttr.accruedInterest
+            incomeAttrDict[i.ISIN] = incomeAttr  
+            
+        return incomeAttrDict 
+                
+    
+    
         
